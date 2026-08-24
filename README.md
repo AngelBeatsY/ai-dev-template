@@ -8,104 +8,34 @@ AI 开发模板:一套可复制到新项目的文档结构、工作流规范与 
 2. **治理分级** — 不是所有改动都走重流程:小改直接做、常规走 spec、重大走 RFC;拿不准就升一级。
 3. **文档即上下文** — brief/spec/RFC/ADR 既是团队协作记录,也是 AI 在未来会话中恢复上下文的依据。
 
-## 获取模板
+## 安装与初始化
 
-按目标分两种场景。**均不要继承模板的 .git 历史**。
+**给 AI**:三句话任选,**零额外参数** —— 场景判断、执行步骤、完成判据全部在 [install.md](install.md) 中,AI 读取后自行执行(唯一要替换的是 `<your-org>`):
 
-### 场景一:新建项目
-
-```bash
-# 方式一:GitHub Template Repository(推送本仓库后在设置中开启)
-# 页面点 Use this template,自动创建无历史的新仓库
-
-# 方式二:下载 zip 后解压,删除其中的 .git 目录
-
-# 方式三:npx degit(一行获取,无历史)
-npx degit <your-org>/ai-dev-template my-new-project && cd my-new-project && git init
+```text
+按 https://github.com/<your-org>/ai-dev-template/install.md 安装
 ```
 
-### 场景二:给现有项目安装工作流
+```text
+按 https://github.com/<your-org>/ai-dev-template/install.md 初始化
+```
 
-把模板的 `AGENTS.md`、`.github/`、`docs/` 并入当前代码仓库,不动现有代码与目录结构。
+```text
+按 https://github.com/<your-org>/ai-dev-template/install.md 安装并初始化
+```
+
+**给人**(手动获取,**均不要继承模板的 .git 历史**;冲突处理与初始化步骤见 [install.md](install.md)):
 
 ```bash
-# degit 到临时目录,再把规范文件复制进当前项目(在当前项目根目录执行)
+# 新建项目:degit 一行(或 GitHub Template Repository / 下载 zip 后删除 .git 目录)
+npx degit <your-org>/ai-dev-template my-new-project && cd my-new-project && git init
+
+# 并入现有项目:在当前项目根目录执行(已有 README 不覆盖)
 npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
   cp -r /tmp/ai-dev-template/{AGENTS.md,.github,docs} ./ && rm -rf /tmp/ai-dev-template
 ```
 
-并入时的冲突处理:
-
-| 文件 | 处理 |
-|---|---|
-| 已有 `README.md` | **不覆盖** -- 保留现有内容,初始化时手工合并模板的「文档导读」等章节进去 |
-| 已有 `.gitignore` | **不自动并入**(上面的命令不含它);项目已有 gitignore 时无需动,需要模板条目时手工追加 |
-| 已有 `AGENTS.md` | **合并** -- 保留现有指令,把模板内容并入;冲突以现有为准 |
-| `LICENSE` / `.gitattributes` | **不自动并入**;需要时从模板仓库按需自取 |
-| 现有代码目录 | 模板不预设代码目录,无冲突 |
-| `docs/` | 模板自带(含 verify-docs.js 自检工具),直接放入 |
-
-### 一句话提示词
-
-三个动词任选,**不需要任何额外参数** —— 场景判断、执行步骤、完成判据全部由下方「AI 执行指引」定义,AI 读取本 README 后自行执行。唯一要替换的是 `<your-org>`:
-
-```text
-按 https://github.com/<your-org>/ai-dev-template/README.md 安装
-```
-
-```text
-按 https://github.com/<your-org>/ai-dev-template/README.md 初始化
-```
-
-```text
-按 https://github.com/<your-org>/ai-dev-template/README.md 安装并初始化
-```
-
-**AI 执行指引**(按提示词中的动词行事,不向用户索要额外信息):
-
-- **「安装」**:自行推断场景并报告「判断为场景 X,依据是 …」等用户确认 —— 当前目录为空或新仓库 → 场景一(degit 建仓);已有代码 → 场景二(把 `AGENTS.md`、`.github/`、`docs/` 并入,按冲突表处理)。重跑幂等:已并入过的项目按冲突表合并,不覆盖现有内容。
-- **「初始化」**:执行「初始化清单」第 2-8 步,逐项提问填写(项目已有代码时先读代码与配置文件反推再确认),每步确认验收点,以 `node docs/verify-docs.js --strict` 通过收尾。
-- **「安装并初始化」**:先安装,确认后初始化。
-
-**完成标志(DONE WHEN)**:
-
-| 动词 | 完成 |
-|---|---|
-| 安装 | `AGENTS.md`、`docs/`、`.github/` 就位(或新仓库已创建);`node docs/verify-docs.js` 通过 |
-| 初始化 | `node docs/verify-docs.js --strict` 通过;初始化提交完成(`chore: initialize from ai-dev-template`) |
-| 安装并初始化 | 两者全部达成 |
-
-## 初始化清单
-
-获取模板(场景一)或并入模板(场景二)后,按序完成。**第 1 步与第 9 步是 git 操作,第 2-8 步建议交给 AI**(见下方提示词)。
-
-| # | 步骤 | 验收点 |
-|---|---|---|
-| 1 | 首次提交(场景一:`git init` 后已含;场景二:并入后 `git add` 提交) | `git log` 有一条记录 |
-| 2 | 填写 `docs/tech/tech-stack.md` 全部 TODO | 该文件无 TODO 残留 |
-| 3 | 填写 `docs/tech/architecture.md` 初稿 | 至少有总图雏形 + 模块表 |
-| 4 | 填写 `docs/tech/concepts.md` 术语表初稿 | 核心领域术语与统一用词入表 |
-| 5 | 更新 `docs/STATUS.md` | 当前状态、下一步、工作日志首条 |
-| 6 | 合并根 README(场景一:改写为项目说明;场景二:把模板章节并入现有 README) | 无模板专属章节残留 |
-| 7 | 在 `AGENTS.md` 第 1 节填项目一句话说明 | 其余章节不动 |
-| 8 | `node docs/verify-docs.js --strict` 通过 | 活文档 TODO 全部清零 |
-| 9 | 提交 `chore: initialize from ai-dev-template` 并推送 | PR 模板生效 |
-
-### AI 初始化提示词
-
-并入或新建模板后,将下面这段完整发给任一 AI 编码工具,代替手工完成第 2-8 步。AI 应逐项提问、逐项填写、逐项向用户确认验收点。
-
-```text
-你正在协助初始化一个(新/已并入 ai-dev-template 的)项目。先阅读 AGENTS.md 与 docs/README.md 理解规范体系,然后按以下步骤逐项向我提问并填写,每完成一步向我报告并确认后再进行下一步:
-
-1. 逐项向我提问,填写 docs/tech/tech-stack.md 的全部 TODO(template) 占位(语言/运行时、框架、常用命令、测试、项目惯用法)。**项目已有代码时先读代码与配置文件(package.json、pyproject.toml 等)反推这些信息,再向我确认**,而不是纯提问。完成后确认该文件无 TODO(template) 残留。
-2. 根据我的口述生成 docs/tech/architecture.md 初稿(系统概览 Mermaid 雏形 + 模块清单表 + 至少一条关键数据流)。
-3. 协助我梳理 docs/tech/concepts.md:领域术语表(术语/代码名/含义)与统一用词表初稿。
-4. 初始化 docs/STATUS.md:填写当前状态与下一步,工作日志写第一条初始化记录。
-5. 把根 README.md 改写为本项目的说明(新项目)或合并模板章节到现有 README(已并入项目),删除「模板使用」「获取模板」「初始化」「FAQ」等模板专属章节。
-6. 在 AGENTS.md 第 1 节填入项目一句话说明,其余章节不动。
-7. 全部完成后运行 `node docs/verify-docs.js --strict` 并向我报告:必须通过(活文档占位清零);若有失败逐一定位并补填。
-```
+初始化(填写 tech-stack / architecture / concepts / STATUS)的完整步骤与验收点同样在 [install.md](install.md);日常使用流程见下方「日常使用」。
 
 ## 日常使用:一个需求的完整流程
 
@@ -167,6 +97,7 @@ SPEC-NNNN 已合并。按 workflow.md 第 3.6 节收口:
 ai-dev-template/
 ├── AGENTS.md                    # AI 协作规范唯一入口(≤150 行)
 ├── README.md                    # 本文件(初始化后改写为项目说明)
+├── install.md                   # 给 AI 的安装与初始化指令(场景一项目初始化后删除)
 ├── .github/PULL_REQUEST_TEMPLATE.md
 └── docs/
     ├── README.md                # 文档中心 + 状态注册表(唯一)
