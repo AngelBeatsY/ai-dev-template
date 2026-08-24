@@ -47,17 +47,33 @@ npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
 
 ### 一句话提示词
 
-把下面两句话**按序**发给 AI 编码工具(需有 Bash 权限),将 `<your-org>` 替换为实际仓库组织:
+三个动词任选,**不需要任何额外参数** —— 场景判断、执行步骤、完成判据全部由下方「AI 执行指引」定义,AI 读取本 README 后自行执行。唯一要替换的是 `<your-org>`:
 
 ```text
-按 https://github.com/<your-org>/ai-dev-template 的 README「场景二」,把 AGENTS.md、docs/、.github/ 并入当前项目
+按 https://github.com/<your-org>/ai-dev-template/README.md 安装
 ```
 
 ```text
-按 https://github.com/<your-org>/ai-dev-template 的 README「初始化清单」,逐项向我提问并填写当前项目的规范文档,直到 TODO(template) 清零
+按 https://github.com/<your-org>/ai-dev-template/README.md 初始化
 ```
 
-第一句把规范文件并入当前项目(不覆盖现有 README 与 .gitignore);第二句逐项提问填写 docs/ 下的占位,填完即项目可用的规范体系。新建项目跳过第一句,改用「场景一」的 degit 命令建仓后直接跑第二句。
+```text
+按 https://github.com/<your-org>/ai-dev-template/README.md 安装并初始化
+```
+
+**AI 执行指引**(按提示词中的动词行事,不向用户索要额外信息):
+
+- **「安装」**:自行推断场景并报告「判断为场景 X,依据是 …」等用户确认 —— 当前目录为空或新仓库 → 场景一(degit 建仓);已有代码 → 场景二(把 `AGENTS.md`、`.github/`、`docs/` 并入,按冲突表处理)。重跑幂等:已并入过的项目按冲突表合并,不覆盖现有内容。
+- **「初始化」**:执行「初始化清单」第 2-8 步,逐项提问填写(项目已有代码时先读代码与配置文件反推再确认),每步确认验收点,以 `node docs/verify-docs.js --strict` 通过收尾。
+- **「安装并初始化」**:先安装,确认后初始化。
+
+**完成标志(DONE WHEN)**:
+
+| 动词 | 完成 |
+|---|---|
+| 安装 | `AGENTS.md`、`docs/`、`.github/` 就位(或新仓库已创建);`node docs/verify-docs.js` 通过 |
+| 初始化 | `node docs/verify-docs.js --strict` 通过;初始化提交完成(`chore: initialize from ai-dev-template`) |
+| 安装并初始化 | 两者全部达成 |
 
 ## 初始化清单
 
