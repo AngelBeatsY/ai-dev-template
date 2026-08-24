@@ -1,0 +1,19 @@
+# 仅保留操作系统 / 编辑器产生的通用垃圾文件。
+# 技术栈相关的忽略规则(构建产物、依赖目录等)由各项目在初始化时自行追加。
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
+desktop.ini
+
+# 编辑器
+.idea/
+*.swp
+*.swo
+*~
+
+# 临时文件
+*.tmp
+*.log

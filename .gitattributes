@@ -1,0 +1,5 @@
+# 统一换行符,防跨平台(Windows CRLF / Linux LF)混乱导致的无意义 diff。
+
+* text=auto
+*.md text
+*.js text
