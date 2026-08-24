@@ -41,8 +41,9 @@ npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
 | 已有 `README.md` | **不覆盖** -- 保留现有内容,初始化时手工合并模板的「文档导读」等章节进去 |
 | 已有 `.gitignore` | **不自动并入**(上面的命令不含它);项目已有 gitignore 时无需动,需要模板条目时手工追加 |
 | 已有 `AGENTS.md` | **合并** -- 保留现有指令,把模板内容并入;冲突以现有为准 |
+| `LICENSE` / `.gitattributes` | **不自动并入**;需要时从模板仓库按需自取 |
 | 现有代码目录 | 模板不预设代码目录,无冲突 |
-| `docs/` | 模板自带,直接放入 |
+| `docs/` | 模板自带(含 verify-docs.js 自检工具),直接放入 |
 
 ### 一句话提示词
 
@@ -71,7 +72,7 @@ npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
 | 5 | 更新 `docs/STATUS.md` | 当前状态、下一步、工作日志首条 |
 | 6 | 合并根 README(场景一:改写为项目说明;场景二:把模板章节并入现有 README) | 无模板专属章节残留 |
 | 7 | 在 `AGENTS.md` 第 1 节填项目一句话说明 | 其余章节不动 |
-| 8 | `node scripts/verify-docs.js --strict` 通过 | 活文档 TODO 全部清零 |
+| 8 | `node docs/verify-docs.js --strict` 通过 | 活文档 TODO 全部清零 |
 | 9 | 提交 `chore: initialize from ai-dev-template` 并推送 | PR 模板生效 |
 
 ### AI 初始化提示词
@@ -87,7 +88,7 @@ npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
 4. 初始化 docs/STATUS.md:填写当前状态与下一步,工作日志写第一条初始化记录。
 5. 把根 README.md 改写为本项目的说明(新项目)或合并模板章节到现有 README(已并入项目),删除「模板使用」「获取模板」「初始化」「FAQ」等模板专属章节。
 6. 在 AGENTS.md 第 1 节填入项目一句话说明,其余章节不动。
-7. 全部完成后全局搜索 TODO(template):,向我报告结果必须为零;若有残留逐一定位并补填。
+7. 全部完成后运行 `node docs/verify-docs.js --strict` 并向我报告:必须通过(活文档占位清零);若有失败逐一定位并补填。
 ```
 
 ## 日常使用:一个需求的完整流程
@@ -155,6 +156,7 @@ ai-dev-template/
     ├── README.md                # 文档中心 + 状态注册表(唯一)
     ├── STATUS.md                # 项目状态 + 工作日志(跨会话交接锚点)
     ├── decisions.md             # 模板设计决策与理由(模板自带,保留)
+    ├── verify-docs.js           # 文档自检工具(模板自带,保留)
     ├── briefs/                  # 需求 brief
     ├── specs/                   # 功能规格 spec + 任务拆解 tasks
     ├── rfcs/                    # 重大变更提案 RFC

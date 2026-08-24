@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 /**
  * verify-docs.js — 文档体系自检脚本(零依赖,Node 内置 fs/path)。
- * 用法:node scripts/verify-docs.js [--strict]
+ * 用法:node docs/verify-docs.js [--strict]
  *   默认:死链 / AGENTS.md 行数 / 编号配对 必须通过;TODO(template) 仅报告分布。
  *   --strict:追加要求四个活文档(tech-stack / architecture / concepts / STATUS)TODO 清零
  *             —— 用于初始化验收与初始化完成后的 CI。
@@ -29,7 +29,7 @@ function fail(msg) {
 const mdFiles = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
-    if (e.name === '.git' || e.name === 'node_modules') continue;
+    if (e.name === '.git' || e.name === 'node_modules' || e.name === '.tmp' || e.name.startsWith('.')) continue;
     const p = path.join(dir, e.name);
     if (e.isDirectory()) walk(p);
     else if (e.name.endsWith('.md')) mdFiles.push(p);

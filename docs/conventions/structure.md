@@ -9,8 +9,7 @@
 | `AGENTS.md` | AI 协作规范的唯一入口(见根目录该文件) |
 | `README.md` | 项目说明 |
 | `.github/` | GitHub 配置(PR 模板等) |
-| `docs/` | 全部文档,见下节 |
-| `scripts/verify-docs.js` | **模板自带**:文档自检(死链 / TODO 残留 / AGENTS.md 行数 / 编号配对),`node scripts/verify-docs.js` |
+| `docs/` | 全部文档与文档工具,见下节 |
 | 代码目录 | **本模板不预设**(如 `src/`、`app/`、`lib/`),由各项目在 [tech-stack.md](../tech/tech-stack.md) 中声明并维护 |
 
 新项目的代码目录结构 MUST 在 `docs/tech/tech-stack.md` 的「项目惯用法」一节声明,包含每个顶层目录的职责一句话。未声明的顶层目录不应出现。
@@ -21,6 +20,7 @@
 |---|---|---|
 | `docs/STATUS.md` | 项目状态活文档:当前状态、进行中、下一步、工作日志(见 [workflow.md](workflow.md) 6.2 节) | 历史流水(进工作日志,只追加) |
 | `docs/decisions.md` | **模板自带**:ai-dev-template 的设计决策记录(随模板分发,初始化后保留;见 [decisions.md](../decisions.md)) | 目标项目自己的决策(走 ADR) |
+| `docs/verify-docs.js` | **模板自带**:文档自检工具(死链 / TODO 分布 / AGENTS.md 行数 / 编号配对),`node docs/verify-docs.js [--strict]` | — |
 | `docs/briefs/` | 需求 brief(按 [brief-template.md](../briefs/brief-template.md) 实例化) | 技术方案 |
 | `docs/specs/` | 功能规格 spec 与任务拆解 tasks | 需求动机、架构决策 |
 | `docs/rfcs/` | 重大变更提案 RFC | 轻量决策(走 ADR) |
