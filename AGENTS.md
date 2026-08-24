@@ -20,8 +20,9 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 
 | 任务类型 | 必读 | 选读 |
 |---|---|---|
-| 新功能立项(写 brief/spec/tasks) | `docs/conventions/workflow.md`(先判分级) | 对应 `*-template.md`、`docs/research/`(已有调研) |
-| 施工 / 改代码 | 对应 spec + tasks(如有)、`docs/tech/tech-stack.md`、`docs/conventions/dev-standards.md` | `docs/conventions/workflow.md` 第 3.4-3.6 节(开工就绪与执行协议)、`docs/tech/concepts.md`、`docs/conventions/structure.md` |
+| 新功能立项(写 brief/spec/tasks) | `docs/conventions/workflow.md`(先判分级) | 对应 `*-template.md`、`docs/conventions/writing-style.md` 与 `structure.md`(书写正式文档时)、`docs/research/`(已有调研) |
+| 施工 / 改代码 | 对应 spec + tasks(如有)、`docs/conventions/workflow.md` 第 3.4-3.6 节(开工就绪与执行协议)、`docs/tech/tech-stack.md`、`docs/conventions/dev-standards.md` | `docs/tech/concepts.md`、`docs/conventions/structure.md` |
+| 验收 / 评审 PR | `docs/conventions/workflow.md` 第 3.5 节、对应 spec | `.github/PULL_REQUEST_TEMPLATE.md`(提交者自检与评审清单) |
 | 写 / 改文档 | `docs/conventions/writing-style.md`、`docs/conventions/structure.md` | `docs/tech/concepts.md`(术语与用词) |
 | 分支 / 提交 / PR | `docs/conventions/git-workflow.md` | `.github/PULL_REQUEST_TEMPLATE.md` |
 | 查历史决策 | `docs/README.md` 注册表 | 对应 RFC / ADR |
