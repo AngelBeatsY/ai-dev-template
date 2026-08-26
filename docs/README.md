@@ -23,9 +23,18 @@
 | [specs/](specs/) | 功能规格 spec 与任务拆解 tasks | 流水产物 |
 | [rfcs/](rfcs/) | 重大变更提案 | 流水产物 |
 | [adr/](adr/) | 架构决策记录 | 流水产物 |
-| [research/](research/) | 调研记录(只读:结论落档不回改,新结论追加新文件) | 调研记录 |
+| [research/](research/) | 调研记录(只读:结论落档不回改,新结论追加新文件;多文件调研组织见 [structure.md](conventions/structure.md) 5.2,登记见下方 research 文件清单) | 调研记录 |
 | [design/](design/) | UI/视觉设计稿(设计先行时用) | 表单模板 |
 | [tech/](tech/) | tech-stack.md、architecture.md、concepts.md | 活文档,每项目一份 |
+
+## research 文件清单
+
+调研记录不编号,不入下方四张编号注册表;每份调研(单文件与多文件)MUST 在本表登记一行(与文件创建同一 commit,规则见 [structure.md](conventions/structure.md) 5.2)—— 半登记的清单表无法作为可信检索面。
+
+| 文件 / 目录 | 内容 |
+|---|---|
+| (示例行,首次使用时删除)research/prior-art.md | 先例工具深挖:主文档结论(含证据清单) |
+| (示例行,首次使用时删除)research/prior-art/ | 证据目录:fetch.js 取证脚本、raw/ 原始 JSON、src/ 源码原文 |
 
 ## 阅读矩阵
 

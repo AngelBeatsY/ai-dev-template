@@ -150,4 +150,5 @@ AGENTS.md 是跨工具通用标准,主流 AI 编码工具都已支持。多份�
 
 ## 模板版本
 
+- v1.1.0(2026-08-26):research 多文件调研规范 —— 平铺主文档 + 同 slug 证据目录、证据清单与登记规则(structure.md 5.2、research-template.md 证据清单节、docs/README.md research 文件清单);模板治理隔离机制(meta/ + manifest.txt)。提案档案 RFC-0001 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.0.0(2026-08-24):首版。

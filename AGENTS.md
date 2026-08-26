@@ -6,7 +6,7 @@
 
 TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 
-> 基于 ai-dev-template v1.0.0 初始化(模板升级时更新此版本号作为比对基准)。
+> 基于 ai-dev-template v1.1.0 初始化(模板升级时更新此版本号作为比对基准)。
 
 - `docs/conventions/` — 规范:怎么做事(工作流、git、开发、目录、书写)。
 - `docs/briefs|specs|rfcs|adr/` — 工作流产物:做事的记录,状态登记在 `docs/README.md`。

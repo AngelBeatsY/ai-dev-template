@@ -16,6 +16,6 @@
 
 | 编号 | 标题 | 状态 | 更新日期 | 链接 |
 |---|---|---|---|---|
-| RFC-0001 | 多文件调研组织规范(research 证据目录) | Draft | 2026-08-26 | [0001-research-multi-file.md](rfcs/0001-research-multi-file.md) |
+| RFC-0001 | 多文件调研组织规范(research 证据目录) | Accepted | 2026-08-26 | [0001-research-multi-file.md](rfcs/0001-research-multi-file.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.js --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。
