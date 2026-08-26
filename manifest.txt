@@ -1,0 +1,8 @@
+AGENTS.md
+README.md
+install.md
+LICENSE
+.gitattributes
+.gitignore
+.github/
+docs/

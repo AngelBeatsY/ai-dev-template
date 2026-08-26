@@ -1,15 +1,19 @@
 #!/usr/bin/env node
 /**
  * verify-docs.js — 文档体系自检脚本(零依赖,Node 内置 fs/path)。
- * 用法:node docs/verify-docs.js [--strict]
+ * 用法:node docs/verify-docs.js [--strict] [--template]
  *   默认:死链 / AGENTS.md 行数 / 编号配对 必须通过;TODO(template) 仅报告分布。
  *   --strict:追加要求四个活文档(tech-stack / architecture / concepts / STATUS)TODO 清零
  *             —— 用于初始化验收与初始化完成后的 CI。
+ *   --template:仅模板仓库自身使用 —— 校验发布面:manifest.txt 列出的路径存在,
+ *              且根目录除清单项、meta/ 与清单允许的文件外无其他顶层条目
+ *              (防止模板治理文件放错位置静默泄漏到下游项目)。
  * 检查项:
  *   1. 死链:全部 markdown 相对链接指向的文件必须存在
  *   2. TODO(template) 分布:初始化完成后活文档应为零(其余文件中的出现是占位约定的定义文字)
  *   3. AGENTS.md 行数:不得超过 150(硬上限,见该文件第 9 节)
  *   4. 编号冲突:specs/ 目录同编号只允许一组 spec+tasks
+ *   5. (--template)发布面校验:manifest.txt 路径存在 + 根目录无清单外条目
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  */
 
@@ -18,6 +22,7 @@ const path = require('path');
 
 const root = path.resolve(__dirname, '..');
 const isStrict = process.argv.includes('--strict');
+const isTemplate = process.argv.includes('--template');
 let failures = 0;
 
 function fail(msg) {
@@ -94,7 +99,29 @@ const base = failures;
 for (const [num, count] of Object.entries(specNums)) {
   if (count > 2) fail(`编号 ${num} 有 ${count} 个文件(超过 spec+tasks 一对)`);
 }
-if (failures === base) console.log(`  ✓ ${Object.keys(specNums).length} 个编号,配对正常`);
+if (failures === 0) console.log(`  ✓ ${Object.keys(specNums).length} 个编号,配对正常`);
+
+// ---------- 5. (--template)发布面校验 ----------
+if (isTemplate) {
+  console.log('\n[5] 发布面校验(--template:manifest.txt 白名单 + 根目录无清单外条目)');
+  const manifestPath = path.join(root, 'manifest.txt');
+  if (!fs.existsSync(manifestPath)) {
+    fail('manifest.txt 不存在(--template 模式要求)');
+  } else {
+    const listed = fs.readFileSync(manifestPath, 'utf-8')
+      .split('\n').map(s => s.trim()).filter(Boolean);
+    for (const item of listed) {
+      if (!fs.existsSync(path.join(root, item))) fail(`manifest.txt 列出的路径不存在:${item}`);
+    }
+    // 根目录允许的顶层条目 = manifest 清单项 + meta/ + manifest.txt + 点前缀项(.git/.gitignore 等)
+    const allowed = new Set([...listed.map(s => s.replace(/\/$/, '')), 'meta', 'manifest.txt']);
+    for (const e of fs.readdirSync(root, { withFileTypes: true })) {
+      if (e.name.startsWith('.')) continue;
+      if (!allowed.has(e.name)) fail(`根目录存在清单外顶层条目:${e.name}(治理文件应放 meta/,分发文件应登记 manifest.txt)`);
+    }
+    if (failures === 0) console.log(`  ✓ ${listed.length} 个清单项全部存在,根目录无清单外条目`);
+  }
+}
 
 // ---------- 汇总 ----------
 console.log('\n' + '='.repeat(50));
