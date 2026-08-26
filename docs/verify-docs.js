@@ -9,7 +9,7 @@
  *              且根目录除清单项、meta/ 与清单允许的文件外无其他顶层条目
  *              (防止模板治理文件放错位置静默泄漏到下游项目)。
  * 检查项:
- *   1. 死链:全部 markdown 相对链接指向的文件必须存在
+ *   1. 死链:全部 markdown 相对链接指向的文件必须存在(围栏代码块内的引用原文不检查)
  *   2. TODO(template) 分布:初始化完成后活文档应为零(其余文件中的出现是占位约定的定义文字)
  *   3. AGENTS.md 行数:不得超过 150(硬上限,见该文件第 9 节)
  *   4. 编号冲突:specs/ 目录同编号只允许一组 spec+tasks
@@ -47,7 +47,9 @@ let linkCount = 0;
 for (const f of mdFiles) {
   const rel = path.relative(root, f).replace(/\\/g, '/');
   const text = fs.readFileSync(f, 'utf-8');
-  for (const m of text.matchAll(/\]\(([^)]+)\)/g)) {
+  // 跳过围栏代码块:其中出现的链接语法是被引用的原文(如 RFC 引用条文),渲染器不将其作为链接
+  const scanText = text.replace(/```[\s\S]*?```/g, '');
+  for (const m of scanText.matchAll(/\]\(([^)]+)\)/g)) {
     const target = m[1].split('#')[0].trim();
     if (!target || /^(https?:|mailto:)/.test(target)) continue;
     linkCount++;
