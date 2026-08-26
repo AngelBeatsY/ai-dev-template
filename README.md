@@ -127,7 +127,7 @@ ai-dev-template/
 | 什么改动走什么流程 | workflow.md 第 2 节(分级标准) |
 | AI 该怎么配合 | 根目录 [AGENTS.md](AGENTS.md) |
 | 项目现在做到哪、上次停在哪 | [docs/STATUS.md](docs/STATUS.md) |
-| 某个技术问题是否调研过 | docs/research/ |
+| 某个技术问题是否调研过 | docs/README.md「research 文件清单」表 → docs/research/ |
 | 术语与统一用词 | [docs/tech/concepts.md](docs/tech/concepts.md) |
 | 怎么写文档 | [docs/conventions/writing-style.md](docs/conventions/writing-style.md) |
 | 文件放哪、怎么命名 | [docs/conventions/structure.md](docs/conventions/structure.md) |

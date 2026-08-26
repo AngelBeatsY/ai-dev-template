@@ -14,6 +14,7 @@
  *   3. AGENTS.md 行数:不得超过 150(硬上限,见该文件第 9 节)
  *   4. 编号冲突:specs/ 目录同编号只允许一组 spec+tasks
  *   5. (--template)发布面校验:manifest.txt 路径存在 + 根目录无清单外条目
+ *   6. research 清单登记:docs/research/ 每项调研已在 docs/README.md 清单表登记,且引用路径存在
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  */
 
@@ -123,6 +124,32 @@ if (isTemplate) {
     }
     if (failures === 0) console.log(`  ✓ ${listed.length} 个清单项全部存在,根目录无清单外条目`);
   }
+}
+
+// ---------- 6. research 清单登记校验 ----------
+// structure.md 5.2:每份调研(单文件与多文件)MUST 在 docs/README.md 的 research 文件清单表登记,
+// 漏登视为未完成;清单表引用的调研路径必须存在(防漂移)。示例行(首次使用时删除)不检查。
+console.log('\n[6] research 清单登记(docs/README.md research 文件清单表)');
+const researchDir = path.join(root, 'docs', 'research');
+if (fs.existsSync(researchDir)) {
+  const readmeText = fs.readFileSync(path.join(root, 'docs', 'README.md'), 'utf-8')
+    .split('\n').filter(l => !l.includes('示例行')).join('\n');
+  const registered = new Set();
+  for (const m of readmeText.matchAll(/research\/[A-Za-z0-9._/-]+/g)) {
+    const p = m[0].replace(/\/$/, '');
+    if (registered.has(p)) continue;
+    registered.add(p);
+    if (!fs.existsSync(path.join(root, 'docs', p))) fail(`清单表引用的调研不存在:${p}`);
+  }
+  const items = fs.readdirSync(researchDir).filter(n => !n.endsWith('-template.md'));
+  let unregistered = 0;
+  for (const name of items) {
+    if (!registered.has(`research/${name}`)) {
+      fail(`调研未登记清单表:research/${name}(docs/README.md research 文件清单)`);
+      unregistered++;
+    }
+  }
+  if (unregistered === 0) console.log(items.length ? `  ✓ ${items.length} 项调研全部登记` : '  · 尚无调研记录');
 }
 
 // ---------- 汇总 ----------
