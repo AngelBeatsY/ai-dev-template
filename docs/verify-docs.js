@@ -3,7 +3,7 @@
  * verify-docs.js — 文档体系自检脚本(零依赖,Node 内置 fs/path)。
  * 用法:node docs/verify-docs.js [--strict] [--template]
  *   默认:死链 / AGENTS.md 行数 / 编号配对 必须通过;TODO(template) 仅报告分布。
- *   --strict:追加要求四个活文档(tech-stack / architecture / concepts / STATUS)TODO 清零
+ *   --strict:追加要求活文档(STATUS.md 与 docs/tech/ 全部活文档)TODO 清零
  *             —— 用于初始化验收与初始化完成后的 CI。
  *   --template:仅模板仓库自身使用 —— 校验发布面:manifest.txt 列出的路径存在,
  *              且根目录除清单项、meta/ 与清单允许的文件外无其他顶层条目
@@ -48,8 +48,9 @@ let linkCount = 0;
 for (const f of mdFiles) {
   const rel = path.relative(root, f).replace(/\\/g, '/');
   const text = fs.readFileSync(f, 'utf-8');
-  // 跳过围栏代码块:其中出现的链接语法是被引用的原文(如 RFC 引用条文),渲染器不将其作为链接
-  const scanText = text.replace(/```[\s\S]*?```/g, '');
+  // 跳过围栏代码块与行内代码:其中出现的链接语法是被引用的原文(如 RFC 引用条文、规范中展示链接写法的示例),
+  // 渲染器不将其作为链接;行内代码语义即字面文本(RFC-0002 开放问题③)
+  const scanText = text.replace(/```[\s\S]*?```/g, '').replace(/`[^`\n]*`/g, '');
   for (const m of scanText.matchAll(/\]\(([^)]+)\)/g)) {
     const target = m[1].split('#')[0].trim();
     if (!target || /^(https?:|mailto:)/.test(target)) continue;
@@ -63,10 +64,13 @@ console.log(failures === 0 ? `  ✓ ${linkCount} 个相对链接全部有效` : 
 
 // ---------- 2. TODO(template) 残留 ----------
 // 默认为报告模式(信息性,不影响退出码):模板仓库与未完成初始化的项目存在占位是预期状态。
-// --strict 时,初始化须填写的四个活文档(初始化清单第 2-5 步)任一有残留即失败。
+// --strict 时,初始化须填写的活文档(初始化清单第 1-4 步:tech/ 全部活文档与 STATUS)任一有残留即失败。
 // 其他文件(README / writing-style / 模板本体)中的 TODO(template) 是占位约定的定义文字,不检查。
 console.log('\n[2] TODO(template) 分布' + (isStrict ? '(strict:活文档残留即失败)' : '(报告模式,加 --strict 启用严格检查)'));
-const LIVE_DOCS = ['docs/tech/tech-stack.md', 'docs/tech/architecture.md', 'docs/tech/concepts.md', 'docs/STATUS.md'];
+// 活文档 = STATUS.md + docs/tech/ 全部非 template 的 markdown(RFC-0002:tech/ 三件套可增补,--strict 覆盖面动态跟随)
+const LIVE_DOCS = ['docs/STATUS.md', ...fs.readdirSync(path.join(root, 'docs', 'tech'))
+  .filter(n => n.endsWith('.md') && !n.endsWith('-template.md'))
+  .map(n => `docs/tech/${n}`)];
 let liveTodo = 0;
 for (const f of mdFiles) {
   const rel = path.relative(root, f).replace(/\\/g, '/');

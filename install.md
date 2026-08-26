@@ -38,6 +38,8 @@ npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
 
 按冲突表处理:已有 README **不覆盖**;`.gitignore`、`LICENSE`、`.gitattributes` 不自动并入;已有 AGENTS.md 合并(冲突以现有为准);`docs/` 直接放入。
 
+`docs/` 放入后,与模板体例不一致的存量文档(如编号章节)可保留原体例,豁免范围与各自实际状态在 `docs/README.md` 注册表声明(见 writing-style.md 第 2 节)。
+
 **幂等**:重跑安装不破坏 —— 已并入过的项目按冲突表合并,不覆盖任何现有内容。
 
 ## 初始化

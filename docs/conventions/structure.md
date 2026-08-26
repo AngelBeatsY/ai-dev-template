@@ -28,7 +28,7 @@
 | `docs/adr/` | 架构决策记录 ADR | 需要正式评审的提案(走 RFC) |
 | `docs/design/` | UI/视觉设计稿(按 [design-template.md](../design/design-template.md) 实例化;设计先行时用) | 技术方案(走 spec)、流程规范 |
 | `docs/research/` | 调研记录(按 [research-template.md](../research/research-template.md) 实例化);**只读:结论落档不回改,新结论追加新文件**;多文件调研的组织见 5.2 节 | 待验证的猜想、无结论的笔记 |
-| `docs/tech/` | 技术事实活文档:tech-stack.md、architecture.md、concepts.md | 流程规范、工作流产物 |
+| `docs/tech/` | 技术事实活文档:tech-stack.md、architecture.md、concepts.md 三件套必选,可按项目需要增补同粒度活文档(如 testing.md),增补项 MUST 在 tech-stack.md「项目惯用法」一节声明 | 流程规范、工作流产物 |
 | `docs/conventions/` | 流程与规范文档 | 任何具体需求的记录 |
 | `docs/archive/` | Superseded 超过 1 年的历史产物(编号与链接不变) | 活跃文档 |
 

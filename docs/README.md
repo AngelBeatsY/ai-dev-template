@@ -25,7 +25,7 @@
 | [adr/](adr/) | 架构决策记录 | 流水产物 |
 | [research/](research/) | 调研记录(只读:结论落档不回改,新结论追加新文件;多文件调研组织见 [structure.md](conventions/structure.md) 5.2,登记见下方 research 文件清单) | 调研记录 |
 | [design/](design/) | UI/视觉设计稿(设计先行时用) | 表单模板 |
-| [tech/](tech/) | tech-stack.md、architecture.md、concepts.md | 活文档,每项目一份 |
+| [tech/](tech/) | tech-stack.md、architecture.md、concepts.md 三件套必选,可按需增补(如 testing.md,须在 tech-stack.md 声明) | 活文档,每项目一份 |
 
 ## research 文件清单
 
