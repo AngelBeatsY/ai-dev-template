@@ -1,6 +1,6 @@
 # AGENTS.md — AI 协作规范
 
-本文件是所有 AI 编码工具(Claude Code、Cursor、Copilot 等)在本仓库的**唯一规范入口**。任何会话开始、执行任何非常规任务前 MUST 先读本文件。修改本文件视为重大变更(见 R8)。最后更新:2026-08-24。
+本文件是所有 AI 编码工具(Claude Code、Cursor、Copilot 等)在本仓库的**唯一规范入口**。任何会话开始、执行任何非常规任务前 MUST 先读本文件。修改本文件视为重大变更(见 R8)。最后更新:2026-09-01。
 
 ## 1. 项目简介与规范地图
 
@@ -53,6 +53,7 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 - **R7** 不提交密钥、凭证、大型二进制;不确定是否敏感时先问。
 - **R8** 不修改 `.github/`、CI 配置、目录结构、`docs/conventions/` 规范与本文件,除非任务本身就是这类改动(此时至少为重大级)。
 - **R9** 关于代码现状与外部系统行为的结论 MUST 附证据(文件与行号、实测输出或 `docs/research/` 落档结论),不得转述他人结论或凭记忆断言;未核实的显式标注「未核实」。
+- **R10** push、合并 PR、force push 与丢弃未提交改动的 git 操作 MUST 经用户当次明确授权;授权不跨会话延续。
 
 ## 5. 代码与提交规范摘要
 
@@ -61,6 +62,7 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 - commit 用 Conventional Commits,subject 或 body 引用任务编号(SPEC-NNNN / RFC-NNNN)。
 - 分支名 `type/NNNN-slug`,如 `feat/0001-user-auth`。
 - 一个 PR 只做一件事;建议 diff < 400 行。
+- commit 前核对当前分支与暂存区(`git status` + `git diff --staged`),精确路径 `git add`,禁用 `git add -A` / `git add .`。
 - 不吞异常,不空 catch;公共接口必须有测试;修 bug 先写失败测试。
 - 实现细节(linter、错误处理惯例、日志库)以 `docs/tech/tech-stack.md` 为准。
 

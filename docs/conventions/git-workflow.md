@@ -1,6 +1,6 @@
 # Git 工作流规范
 
-本规范定义分支模型、commit、PR 与合并规则。语言与工具无关的细节见 [dev-standards.md](dev-standards.md),流程分级见 [workflow.md](workflow.md)。
+本规范定义分支模型、commit、PR、合并与推送授权规则。语言与工具无关的细节见 [dev-standards.md](dev-standards.md),流程分级见 [workflow.md](workflow.md)。
 
 ## 1. 分支模型
 
@@ -18,9 +18,14 @@
 | `rfc` | 撰写 RFC | RFC 编号 | `rfc/0002-replace-storage` |
 
 - 小改也走分支 + PR,不直接推送主分支(分支名可用 `fix/...` 或 `docs/...`)。
+- 换分支前工作区 MUST 干净;会话结束或中断前以干净工作区或 WIP commit 收口,交接点记入 `docs/STATUS.md`。跨会话不用 stash 保存工作(对后续会话不可见、易丢失)。
 
 ## 2. Commit 规范
 
+- 提交前 MUST 核对当前分支:任务改动 MUST NOT 直接 commit 到主分支(小改也走分支,见第 1 节)。
+- 暂存用精确路径 `git add <path>`,只暂存本任务 / 本会话产出的文件;禁用 `git add -A` 与 `git add .`,不夹带并行会话的改动(含 `docs/STATUS.md` 中他会话追加的行)。
+- 提交前过一遍 `git diff --staged` 自查:无调试残留(打印语句、临时脚本)、无密钥凭证(R7 在提交时点的检查)。
+- 禁止 `--no-verify` 绕过 pre-commit 钩子;钩子失败时修复根因。
 - 使用 Conventional Commits:
 
 | 类型 | 用途 |
@@ -47,15 +52,24 @@
 - 描述区必填:改动说明、关联编号、分级声明 —— 模板见 `.github/PULL_REQUEST_TEMPLATE.md`。
 - 分级声明 MUST 与开工时声明的分级一致;不一致时先说明原因。
 
-## 4. 合并策略
+## 4. 推送、合并与危险操作
+
+push、合并与销毁性操作对外可见或不可逆,授权权在人:
+
+- **推送授权**:`git push` MUST 在每次执行前获得用户当次明确授权,先前授权不跨会话延续;团队可在 workflow.md 第 8 节把非主分支放宽为会话级授权。
+- **禁止 force push**(含 `--force`):已推送历史 MUST NOT 改写(见第 5 节);确需覆盖自己刚推错的功能分支,先获用户明确授权。
+- **合并授权**:合并 MUST 在人工评审通过后(workflow.md 第 3.5 节)经用户当次授权执行,或由用户自行执行 —— AI 不自行合并,包括自己实现的 PR。
+- **危险操作确认**:`git reset --hard`、`git clean -fd`、`git checkout/restore -- <path>`、`git branch -D` 等丢弃未提交内容或分支的操作,MUST 先列出将被丢弃的对象与内容,获用户确认后执行。
+
+## 5. 合并策略
 
 - 小改与单任务 PR 用 **squash merge**:压缩为单个 commit,历史干净。
 - 多任务 PR(有交付记录回填)用 **merge commit**:保留每个任务的 commit —— 交付记录回填的 hash 以此为据,squash 会使回填失效。
 - 已推送的提交 MUST NOT rebase / amend:commit hash 可能已回填进交付记录,重写历史使回填失效;发现问题以新的 `fix` commit 前进。
-- 合并后删除分支。
+- 合并后删除分支,切回主分支并同步本地(`git pull`),清理已合并的本地分支。
 - 主分支 MUST 始终保持:测试通过、lint 通过、可构建。
 
-## 5. 版本与发布(可选)
+## 6. 版本与发布(可选)
 
 采用本节的项目按以下约定,不采用的团队删除本节:
 

@@ -150,6 +150,7 @@ AGENTS.md 是跨工具通用标准,主流 AI 编码工具都已支持。多份�
 
 ## 模板版本
 
+- v1.3.0(2026-09-01):git 安全规范增补 —— 提交暂存纪律(提交前核对当前分支、精确路径 `git add` 并禁 `git add -A` / `git add .`、暂存区自查、禁 `--no-verify`)、新增「推送、合并与危险操作」授权条款(push 逐次授权、禁 force push、AI 不自行合并、销毁性操作先确认)、会话收尾工作区交接与合并后本地同步(git-workflow.md 第 1/2/4/5 节);AGENTS.md 新增 R10;workflow.md 可调参数新增「推送授权粒度」。提案档案 RFC-0003 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.2.0(2026-08-26):tech/ 活文档可扩展(三件套必选 + 增补须在 tech-stack.md 声明)、章节引用三分规则与代码引用双形式(writing-style.md 第 2/4 节)、存量体例豁免登记与编号存量尾插不重排;verify-docs.js 活文档清单动态收集、死链检测行内代码免检;install.md 场景二补存量豁免指引。提案档案 RFC-0002 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.1.0(2026-08-26):research 多文件调研规范 —— 平铺主文档 + 同 slug 证据目录、证据清单与登记规则(structure.md 5.2、research-template.md 证据清单节、docs/README.md research 文件清单);模板治理隔离机制(meta/ + manifest.txt)。提案档案 RFC-0001 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.0.0(2026-08-24):首版。
