@@ -49,18 +49,19 @@
 
 - 文件名一律使用 kebab-case 英文:`user-auth-flow.md`,不使用下划线、空格、中文。
 - 流水产物命名:`NNNN-<slug>.<type>.md`,编号 4 位零填充,各流独立递增:
-- 类型后缀仅在同目录存在多种流水类型时使用(specs/ 的 spec 与 tasks);单类型目录(rfcs/、adr/、design/)目录名即类型,不加后缀;briefs/ 因与 specs/ 同号成链保留 `.brief`,标记链上阶段。
+- 类型后缀仅在同目录存在多种流水类型时使用(specs/ 的 spec 与 tasks);单类型目录(rfcs/、adr/、design/)目录名即类型,不加后缀;briefs/ 固定 `.brief`:brief 常与其 spec 同 slug 而编号独立,后缀跨目录标记类型,避免同名歧义。
 
 ```
-docs/briefs/0001-user-auth.brief.md   # 编号全链沿用:brief → spec → tasks → design 同号
-docs/specs/0001-user-auth.spec.md     # spec 沿用来源 brief/RFC 的编号,与 tasks 同前缀配对
-docs/specs/0001-user-auth.tasks.md
+docs/briefs/0001-user-auth.brief.md      # briefs/ 流内取号;编号不跨流,关联记注册表来源列
+docs/specs/0007-user-auth.spec.md        # specs/ 流内取号;文件头「来源: BRIEF-0001」
+docs/specs/0007-user-auth.tasks.md       # tasks 与 spec 同号(恒 1:1)
+docs/design/0007-user-auth.md            # design 与来源 spec 同号同 slug
 docs/rfcs/0001-replace-storage-engine.md # 单类型目录,不加类型后缀(判据见上)
 docs/adr/0001-use-postgresql.md
 ```
 
-- spec 编号沿用来源(brief 或 RFC);来源未编号或自发 spec 时在 specs/ 内取 max+1。
-- design 编号与来源 spec 同号同 slug;设计稿定稿先于 spec Active(见 [workflow.md](workflow.md) 第 3.2 节)。无来源 spec 的视觉探索不进 design/,按 [workflow.md](workflow.md) 第 2 节探索规则处理,留存结论进 docs/research/。
+- 各流独立取号:编号在各自目录内取 max+1,不跨流沿用 —— brief 与 spec 独立开始、独立推进,编号相同不蕴含关联,不乱序补位(破坏「编号 ≈ 时序」的目录直觉)。spec 与来源 brief/RFC 的关联记入文件头「来源」字段(BRIEF-NNNN / RFC-NNNN / 无)并在注册表「来源」列登记,与文件创建同一 commit;slug SHOULD 与来源 brief 一致,不强制(规格聚焦点常窄于 brief)。
+- design 编号与来源 spec 同号同 slug(spec 是 tasks/design 的唯一编号锚,恒 1:1 无第二个源头抢号);设计稿定稿先于 spec Active(见 [workflow.md](workflow.md) 第 3.2 节)。无来源 spec 的视觉探索不进 design/,按 [workflow.md](workflow.md) 第 2 节探索规则处理,留存结论进 docs/research/。
 
 - slug 为英文短语,不超过 5 个单词。
 - 调研记录不编号:按主题命名,如 `docs/research/claude-code-format.md`;文件头带日期与「状态」(有效 / 被后续调研取代)。多文件调研的同 slug 证据子目录见 5.2 节,子目录名 MUST 与主文档 slug 完全一致。

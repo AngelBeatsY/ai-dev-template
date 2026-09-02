@@ -10,7 +10,7 @@ HTML 注释为指导语,填写后删除。
 |---|---|
 | 编号 | SPEC-NNNN |
 | 状态 | Draft |
-| 来源 | BRIEF-NNNN / RFC-NNNN |
+| 来源 | BRIEF-NNNN / RFC-NNNN / 无(自发;编号即 specs/ 内 max+1) |
 | 负责人 | <姓名> |
 | 创建日期 | YYYY-MM-DD |
 | 更新日期 | YYYY-MM-DD |

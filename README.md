@@ -150,6 +150,7 @@ AGENTS.md 是跨工具通用标准,主流 AI 编码工具都已支持。多份�
 
 ## 模板版本
 
+- v1.11.0(2026-09-02):流水编号各流独立取号 —— spec 编号不沿用 brief/RFC(编号回归流内序号单一语义),跨流关联以注册表「来源」列(Specs 表新增)+ 文件头「来源」字段为权威,slug SHOULD 跨流一致;spec → tasks → design 同号链保留;structure.md 第 4 节规则与示例、workflow.md 第 3.2 节、spec-template.md 来源值域同步。提案档案 RFC-0011 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.10.0(2026-09-02):research 证据目录检查豁免 —— verify-docs.js 死链与占位检查跳过 research/ 下同 slug 证据目录(structure.md 5.2 形态:目录 X 与主文档 X.md 并存),第三方引用原文不入检查;主文档与登记义务照常;structure.md 5.2 新增「检查豁免」条款,头部注释检查项 1 补齐行内代码免检说明。提案档案 RFC-0010 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.9.1(2026-09-02):勘误 —— meta/ 治理档案与 docs/decisions.md 中下游项目名泛化表述;meta/README.md 新增治理档案表述规则(不点名具体下游项目)。无规范条款与工具行为变化。
 - v1.9.0(2026-09-02):流水产物模板验收口径 —— spec-template.md「接口设计」新增错误契约集中表指导语(对外错误路径 ≥ 3 条触发:场景 / HTTP / 错误码 / 附加字段唯一格式口径,ER-N 引用不重复定义);tasks-template.md Phase 分组新增交付边界声明(每组「做到哪算完」与任务验收点构成边界 / 证明两层)。提案档案 RFC-0009 存于模板仓库 meta/rfcs/(不随模板分发)。

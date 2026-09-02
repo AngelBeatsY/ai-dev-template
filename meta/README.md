@@ -27,5 +27,6 @@
 | RFC-0008 | 施工执行协议增补(外部实践吸收) | Accepted | 2026-09-02 | [0008-execution-protocol.md](rfcs/0008-execution-protocol.md) |
 | RFC-0009 | 流水产物模板验收口径增补(外部实践吸收) | Accepted | 2026-09-02 | [0009-template-acceptance.md](rfcs/0009-template-acceptance.md) |
 | RFC-0010 | research 证据目录的检查豁免(verify-docs 结构语义豁免) | Accepted | 2026-09-02 | [0010-evidence-dir-exempt.md](rfcs/0010-evidence-dir-exempt.md) |
+| RFC-0011 | 流水编号各流独立取号(spec 编号不沿用来源) | Accepted | 2026-09-02 | [0011-per-flow-numbering.md](rfcs/0011-per-flow-numbering.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.js --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。
