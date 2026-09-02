@@ -19,5 +19,6 @@
 | RFC-0001 | 多文件调研组织规范(research 证据目录) | Accepted | 2026-08-26 | [0001-research-multi-file.md](rfcs/0001-research-multi-file.md) |
 | RFC-0002 | tech/ 活文档可扩展与引用规则收口(下游反馈吸收) | Accepted | 2026-08-26 | [0002-tech-docs-and-references.md](rfcs/0002-tech-docs-and-references.md) |
 | RFC-0003 | git 提交、推送与合并安全规范增补 | Accepted | 2026-09-01 | [0003-git-safety.md](rfcs/0003-git-safety.md) |
+| RFC-0004 | 流水产物命名判据显式化与 design 流规则收口 | Draft | 2026-09-02 | [0004-naming-and-design-flow.md](rfcs/0004-naming-and-design-flow.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.js --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。
