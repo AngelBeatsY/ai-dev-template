@@ -26,5 +26,6 @@
 | RFC-0007 | 测试基线与 Phase 拆分判据(外部实践吸收) | Accepted | 2026-09-02 | [0007-implementation-guardrails.md](rfcs/0007-implementation-guardrails.md) |
 | RFC-0008 | 施工执行协议增补(外部实践吸收) | Accepted | 2026-09-02 | [0008-execution-protocol.md](rfcs/0008-execution-protocol.md) |
 | RFC-0009 | 流水产物模板验收口径增补(外部实践吸收) | Accepted | 2026-09-02 | [0009-template-acceptance.md](rfcs/0009-template-acceptance.md) |
+| RFC-0010 | research 证据目录的检查豁免(verify-docs 结构语义豁免) | Accepted | 2026-09-02 | [0010-evidence-dir-exempt.md](rfcs/0010-evidence-dir-exempt.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.js --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

@@ -9,7 +9,8 @@
  *              且根目录除清单项、meta/ 与清单允许的文件外无其他顶层条目
  *              (防止模板治理文件放错位置静默泄漏到下游项目)。
  * 检查项:
- *   1. 死链:全部 markdown 相对链接指向的文件必须存在(围栏代码块内的引用原文不检查)
+ *   1. 死链:全部 markdown 相对链接指向的文件必须存在(围栏代码块与行内代码内的引用原文不检查;
+ *      research/ 同 slug 证据目录内的第三方引用原文不检查,见 structure.md 5.2)
  *   2. TODO(template) 分布:初始化完成后活文档应为零(其余文件中的出现是占位约定的定义文字)
  *   3. AGENTS.md 行数:不得超过 150(硬上限,见该文件第 9 节)
  *   4. 编号冲突:specs/ 目录同编号只允许一组 spec+tasks
@@ -34,12 +35,25 @@ function fail(msg) {
 }
 
 // ---------- 收集 markdown 文件 ----------
+// structure.md 5.2:research/ 下目录 X 与主文档 X.md 并存时,X 为证据目录(第三方引用原文,只读落档)。
+// 证据内 markdown 的相对链接以原作者仓库为根,不属本文档体系,不入死链/占位检查(RFC-0010)。
+// 主文档 X.md 与登记义务照常 —— 豁免不等于失踪。
+const researchRoot = path.join(root, 'docs', 'research');
+const evidenceDirs = new Set();
+if (fs.existsSync(researchRoot)) {
+  for (const e of fs.readdirSync(researchRoot, { withFileTypes: true })) {
+    if (e.isDirectory() && fs.existsSync(path.join(researchRoot, `${e.name}.md`))) evidenceDirs.add(e.name);
+  }
+}
 const mdFiles = [];
 (function walk(dir) {
   for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
     if (e.name === '.git' || e.name === 'node_modules' || e.name === '.tmp' || e.name.startsWith('.')) continue;
     const p = path.join(dir, e.name);
-    if (e.isDirectory()) walk(p);
+    if (e.isDirectory()) {
+      if (path.dirname(p) === researchRoot && evidenceDirs.has(e.name)) continue;
+      walk(p);
+    }
     else if (e.name.endsWith('.md')) mdFiles.push(p);
   }
 })(root);
