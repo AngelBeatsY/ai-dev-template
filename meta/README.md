@@ -21,5 +21,6 @@
 | RFC-0003 | git 提交、推送与合并安全规范增补 | Accepted | 2026-09-01 | [0003-git-safety.md](rfcs/0003-git-safety.md) |
 | RFC-0004 | 流水产物命名判据显式化与 design 流规则收口 | Accepted | 2026-09-02 | [0004-naming-and-design-flow.md](rfcs/0004-naming-and-design-flow.md) |
 | RFC-0005 | Schema 与数据演进规范(外部实践吸收) | Accepted | 2026-09-02 | [0005-schema-evolution.md](rfcs/0005-schema-evolution.md) |
+| RFC-0006 | 设计交付标注与实现回标(外部实践吸收) | Accepted | 2026-09-02 | [0006-design-annotation.md](rfcs/0006-design-annotation.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.js --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

@@ -158,7 +158,7 @@ flowchart TD
 - **AI 执行协议**:
   - 按 tasks 顺序逐项执行,每完成一个任务打勾并创建一个 commit。
   - 每个任务/阶段完成后在 tasks 回填**交付记录**(commit hash、测试与 lint 结果、交接要点);交付记录与代码 MUST 同一 commit,禁止代码先走、文档后补。
-  - 偏离两级处理:轻微偏离(实现细节、补测试)记入偏差记录即可;实质偏离(契约、数据结构、边界、范围)MUST 先修订 spec 再继续。
+  - 偏离两级处理:轻微偏离(实现细节、补测试)记入偏差记录即可;实质偏离(契约、数据结构、边界、范围)MUST 先修订 spec 再继续。实现与设计稿的视觉偏离不适用 spec 修订 —— 按 design-template.md「实现回标」节的两级处理执行;触及 FR 的偏离仍按实质偏离修订 spec。
   - 遵循 [dev-standards.md](dev-standards.md) 与 [git-workflow.md](git-workflow.md)。
 
 ### 3.5 review(评审)
