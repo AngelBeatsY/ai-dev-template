@@ -35,13 +35,14 @@
 
 ## 项目惯用法
 
-<!-- dev-standards.md 第 10 节要求的落地声明,逐项填写: -->
+<!-- dev-standards.md 第 11 节要求的落地声明,逐项填写: -->
 
 - 代码目录结构与各顶层目录职责:TODO(template):
 - 错误处理惯例(异常 / Result / 错误码,自定义错误类型在哪定义):TODO(template):
 - 日志库与调用方式:TODO(template):
 - 命名惯例(与语言默认惯例不同之处才写):TODO(template):
 - linter / formatter 配置位置:TODO(template):
+- Schema 演进(有持久化 schema 的项目):迁移工具、迁移文件目录、执行时机(启动自动 / 手动命令)、单版本失败行为、多方言差异(如有):TODO(template):
 
 ## 版本与兼容策略
 
