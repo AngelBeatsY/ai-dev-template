@@ -23,6 +23,7 @@
 | `briefs/`(初版 product/) | 目录名 = 内容类型(specs↔spec、rfcs↔RFC);product 与 `*.brief.md` 脱节,找回文件多一步间接 |
 | `conventions/`(初版 guides/) | 内容全是 MUST 级规则;「指南」暗示可看可不看,弱化约束力 |
 | `adr/` 不改 `decisions/` | 引用格式 `ADR-NNNN` 已与目录名对齐,改名收益仅为语义自解释 |
+| `briefs/` 保留 `.brief` 类型后缀(rfcs/adr/design 不加) | briefs 与 specs 的 spec/tasks 同号同 slug 成链,后缀标记链上阶段,跨目录引用类型自明;单类型目录中后缀与目录名信息重复故省 |
 
 ## 3. 机制设计
 

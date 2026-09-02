@@ -1,5 +1,5 @@
 <!--
-设计文档模板。复制本文件到 docs/design/NNNN-<slug>.md 并填写(编号与来源 spec 同 slug)。
+设计文档模板。复制本文件到 docs/design/NNNN-<slug>.md 并填写(编号与来源 spec 同号同 slug,spec 为 Draft 即可挂靠)。
 适用:验收标准依赖界面视觉细节的功能(详见 workflow.md 第 3.2 节)。
 定位:轻量骨架,可选章节按设计重量增删。目录组织(多文件资产)见 structure.md 第 5.1 节。
 HTML 注释为指导语,填写后删除。

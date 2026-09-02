@@ -26,7 +26,7 @@
 | `docs/specs/` | 功能规格 spec 与任务拆解 tasks | 需求动机、架构决策 |
 | `docs/rfcs/` | 重大变更提案 RFC | 轻量决策(走 ADR) |
 | `docs/adr/` | 架构决策记录 ADR | 需要正式评审的提案(走 RFC) |
-| `docs/design/` | UI/视觉设计稿(按 [design-template.md](../design/design-template.md) 实例化;设计先行时用) | 技术方案(走 spec)、流程规范 |
+| `docs/design/` | UI/视觉设计稿(按 [design-template.md](../design/design-template.md) 实例化;FR 依赖视觉细节时用,定稿先于 spec Active) | 技术方案(走 spec)、流程规范 |
 | `docs/research/` | 调研记录(按 [research-template.md](../research/research-template.md) 实例化);**只读:结论落档不回改,新结论追加新文件**;多文件调研的组织见 5.2 节 | 待验证的猜想、无结论的笔记 |
 | `docs/tech/` | 技术事实活文档:tech-stack.md、architecture.md、concepts.md 三件套必选,可按项目需要增补同粒度活文档(如 testing.md),增补项 MUST 在 tech-stack.md「项目惯用法」一节声明 | 流程规范、工作流产物 |
 | `docs/conventions/` | 流程与规范文档 | 任何具体需求的记录 |
@@ -49,16 +49,18 @@
 
 - 文件名一律使用 kebab-case 英文:`user-auth-flow.md`,不使用下划线、空格、中文。
 - 流水产物命名:`NNNN-<slug>.<type>.md`,编号 4 位零填充,各流独立递增:
+- 类型后缀仅在同目录存在多种流水类型时使用(specs/ 的 spec 与 tasks);单类型目录(rfcs/、adr/、design/)目录名即类型,不加后缀;briefs/ 因与 specs/ 同号成链保留 `.brief`,标记链上阶段。
 
 ```
 docs/briefs/0001-user-auth.brief.md   # 编号全链沿用:brief → spec → tasks → design 同号
 docs/specs/0001-user-auth.spec.md     # spec 沿用来源 brief/RFC 的编号,与 tasks 同前缀配对
 docs/specs/0001-user-auth.tasks.md
-docs/rfcs/0001-replace-storage-engine.md # rfcs/adr 单类型目录,不加类型后缀
+docs/rfcs/0001-replace-storage-engine.md # 单类型目录,不加类型后缀(判据见上)
 docs/adr/0001-use-postgresql.md
 ```
 
 - spec 编号沿用来源(brief 或 RFC);来源未编号或自发 spec 时在 specs/ 内取 max+1。
+- design 编号与来源 spec 同号同 slug;设计稿定稿先于 spec Active(见 [workflow.md](workflow.md) 第 3.2 节)。无来源 spec 的视觉探索不进 design/,按 [workflow.md](workflow.md) 第 2 节探索规则处理,留存结论进 docs/research/。
 
 - slug 为英文短语,不超过 5 个单词。
 - 调研记录不编号:按主题命名,如 `docs/research/claude-code-format.md`;文件头带日期与「状态」(有效 / 被后续调研取代)。多文件调研的同 slug 证据子目录见 5.2 节,子目录名 MUST 与主文档 slug 完全一致。
@@ -94,6 +96,8 @@ docs/design/
 - 文本资产(html / css / svg)进 git;二进制(png 等)控制数量与体积,大量或大图外部托管(Figma / 云盘),说明中记链接(与 AGENTS.md「不提交大型二进制」一致)。
 - **原型与生产分离**:design/ 只放原型与参考;会被产品采用的样式 / token 由实现任务落地到代码目录,不在 design/ 维护双份。
 - 资产文件不带版本号,设计迭代在说明文档记变更,文件替换交由 git 历史。
+- 设计稿不进 docs/README.md 注册表,由来源 spec「接口设计」节链接检索。
+- 非挂靠 spec 的持久参考(页面规范、设计系统)不从 design-template 实例化、不编号,属活文档类(第 3 节判据),每项目一份持续更新,不入注册表;完整生命周期规则待真实使用后按需增补。
 
 ### 5.2 research/ 多文件调研组织
 

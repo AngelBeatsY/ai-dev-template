@@ -15,6 +15,8 @@
  *   4. 编号冲突:specs/ 目录同编号只允许一组 spec+tasks
  *   5. (--template)发布面校验:manifest.txt 路径存在 + 根目录无清单外条目
  *   6. research 清单登记:docs/research/ 每项调研已在 docs/README.md 清单表登记,且引用路径存在
+ *   7. 编号文件命名合式:briefs/specs/rfcs/adr/design 五目录的编号文件名匹配各自模式,
+ *      单类型目录(rfcs/adr/design)不接受类型后缀(RFC-0004)
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  */
 
@@ -155,6 +157,31 @@ if (fs.existsSync(researchDir)) {
   }
   if (unregistered === 0) console.log(items.length ? `  ✓ ${items.length} 项调研全部登记` : '  · 尚无调研记录');
 }
+
+// ---------- 7. 编号文件命名合式 ----------
+// structure.md 第 4 节:类型后缀仅用于同目录存在多种流水类型的场合(specs/ 的 spec 与 tasks);
+// 单类型目录(rfcs/、adr/、design/)目录名即类型,不加后缀;briefs/ 固定 .brief(RFC-0004 机器化)。
+// design/ 仅查顶层(assets/ 由 5.1 节资产清单约束);无编号文件(持久参考活文档)不触发。
+console.log('\n[7] 编号文件命名合式(五目录编号文件命名模式)');
+const NAMING_PATTERNS = [
+  ['briefs', /^\d{4}-[a-z0-9-]+\.brief\.md$/, 'NNNN-<slug>.brief.md'],
+  ['specs', /^\d{4}-[a-z0-9-]+\.(spec|tasks)\.md$/, 'NNNN-<slug>.spec.md / .tasks.md'],
+  ['rfcs', /^\d{4}-[a-z0-9-]+\.md$/, 'NNNN-<slug>.md(不加类型后缀)'],
+  ['adr', /^\d{4}-[a-z0-9-]+\.md$/, 'NNNN-<slug>.md(不加类型后缀)'],
+  ['design', /^\d{4}-[a-z0-9-]+\.md$/, 'NNNN-<slug>.md(不加类型后缀)'],
+];
+let numberedFiles = 0;
+const namingBase = failures;
+for (const [dir, pattern, hint] of NAMING_PATTERNS) {
+  const dirPath = path.join(root, 'docs', dir);
+  if (!fs.existsSync(dirPath)) continue;
+  for (const e of fs.readdirSync(dirPath, { withFileTypes: true })) {
+    if (!e.isFile() || e.name.endsWith('-template.md') || !/^\d{4}-/.test(e.name)) continue;
+    numberedFiles++;
+    if (!pattern.test(e.name)) fail(`${dir}/${e.name} 命名不合式,期望 ${hint}`);
+  }
+}
+if (failures === namingBase) console.log(`  ✓ ${numberedFiles} 个编号文件命名合式`);
 
 // ---------- 汇总 ----------
 console.log('\n' + '='.repeat(50));

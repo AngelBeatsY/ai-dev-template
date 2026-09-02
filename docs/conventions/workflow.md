@@ -100,7 +100,7 @@ flowchart TD
 
 ### 3.2 spec(功能规格)
 
-- **谁写**:spec 负责人(通常由实现负责人担任,AI 可代笔)。从 [spec-template.md](../specs/spec-template.md) 实例化到 `docs/specs/NNNN-<slug>.spec.md`,**编号沿用来源**(brief 或 RFC 的编号,同 slug 全链同号:`0002-x.brief.md` → `0002-x.spec.md` → `0002-x.tasks.md`),文件头互相引用。
+- **谁写**:spec 负责人(通常由实现负责人担任,AI 可代笔)。从 [spec-template.md](../specs/spec-template.md) 实例化到 `docs/specs/NNNN-<slug>.spec.md`,**编号沿用来源**(brief 或 RFC 的编号,同 slug 全链同号:`0002-x.brief.md` → `0002-x.spec.md` → `0002-x.tasks.md` → `0002-x.design.md`,有设计稿时),文件头互相引用。
 - **撰写要求**:
   - 方案依赖未核实的选型或外部系统行为时,先做调研并落档 `docs/research/`(按 [research-template.md](../research/research-template.md));结论以实测与源码为准,不把「文档说应该这样」当依据。
   - 现状盘点每条 MUST 附证据(文件链接、行号或实测结论),不得转述他人结论或凭记忆断言。
