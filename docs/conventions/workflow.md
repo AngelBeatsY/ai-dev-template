@@ -101,6 +101,7 @@ flowchart TD
 ### 3.2 spec(功能规格)
 
 - **谁写**:spec 负责人(通常由实现负责人担任,AI 可代笔)。从 [spec-template.md](../specs/spec-template.md) 实例化到 `docs/specs/NNNN-<slug>.spec.md`,**编号在 specs/ 内取 max+1,不沿用来源编号**(brief 与 spec 独立推进,跨流编号无关联语义);来源(BRIEF-NNNN / RFC-NNNN / 无)写入文件头「来源」字段并在注册表「来源」列登记。tasks 与 design 随来源 spec 同号:spec → 同号 tasks(恒 1:1)→ 同号同 slug design(有设计稿时)。文件头互相引用;slug SHOULD 与来源 brief 一致。
+- **spec 拆分判据**:需求含多个可独立验收(各自有可判对错的 FR 集)的功能时,MUST 拆为多个 spec(各自编号,slug MAY 带母需求前缀,如 `login-page-login`);不可独立验收的内容留在同一 spec 内,施工粒度诉求由 tasks 的 Phase 分组承担。跨 spec 共享约束(统一视觉规范、公共错误处理等)上浮 tech/ 活文档后引用,不在多个 spec 重复;母需求的端到端集成场景立独立集成 spec,不散入子 spec。禁止以功能级施工文档实现一份 spec 对多份 tasks(见第 3.3 节恒 1:1)。
 - **撰写要求**:
   - 方案依赖未核实的选型或外部系统行为时,先做调研并落档 `docs/research/`(按 [research-template.md](../research/research-template.md));结论以实测与源码为准,不把「文档说应该这样」当依据。
   - 现状盘点每条 MUST 附证据(文件链接、行号或实测结论),不得转述他人结论或凭记忆断言。
@@ -125,7 +126,7 @@ flowchart TD
 ### 3.3 tasks(任务拆解)
 
 - **谁写**:实现负责人,AI 可代笔,从 [tasks-template.md](../specs/tasks-template.md) 实例化,与 spec 同前缀:`NNNN-<slug>.tasks.md`。
-- **spec 与 tasks 恒 1:1**:每份进入实现的 spec 有且仅有一份同前缀 tasks;大功能在 tasks 内按 Phase 分组,**不建第二份 tasks**(破坏配对检索与 DoR 核对)。夭折于 Draft 的 spec 可无 tasks。
+- **spec 与 tasks 恒 1:1**:每份进入实现的 spec 有且仅有一份同前缀 tasks;大功能在 tasks 内按 Phase 分组,**不建第二份 tasks**(破坏配对检索与 DoR 核对);按功能切分施工粒度的诉求由第 3.2 节 spec 拆分判据承担 —— 拆 spec,不拆 tasks。夭折于 Draft 的 spec 可无 tasks。
 - **拆分原则**:
   - 单任务 ≤ 半天工作量、只做一件事。
   - 每个任务指到文件级(涉及哪些文件),并带验收点。
