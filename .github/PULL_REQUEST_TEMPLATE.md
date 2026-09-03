@@ -55,7 +55,7 @@ commit 级参与由工具自动添加的 Co-Authored-By 尾注体现,此处声�
 - [ ] 不包含密钥、凭证、敏感信息
 - [ ] 不包含与本任务无关的改动
 - [ ] 兼容性影响已在 spec 或下方说明
-- [ ] 涉及文档改动时 `node docs/verify-docs.js` 通过(死链 / TODO 残留 / 编号配对)
+- [ ] 涉及文档改动时 `node docs/verify-docs.mjs` 通过(死链 / TODO 残留 / 编号配对)
 
 ## 评审者清单
 

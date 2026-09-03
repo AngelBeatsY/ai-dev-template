@@ -103,7 +103,7 @@ ai-dev-template/
     ├── README.md                # 文档中心 + 状态注册表(唯一)
     ├── STATUS.md                # 项目状态 + 工作日志(跨会话交接锚点)
     ├── decisions.md             # 模板设计决策与理由(模板自带,保留)
-    ├── verify-docs.js           # 文档自检工具(模板自带,保留)
+    ├── verify-docs.mjs          # 文档自检工具(模板自带,保留;ESM,Node ≥ 20.11)
     ├── briefs/                  # 需求 brief
     ├── specs/                   # 功能规格 spec + 任务拆解 tasks
     ├── rfcs/                    # 重大变更提案 RFC
@@ -150,6 +150,7 @@ AGENTS.md 是跨工具通用标准,主流 AI 编码工具都已支持。多份�
 
 ## 模板版本
 
+- v2.0.0(2026-09-03):verify-docs 迁移 ESM —— docs/verify-docs.js 更名 docs/verify-docs.mjs(`node:` 前缀导入、`import.meta.dirname`,Node ≥ 20.11),七项检查行为不变(新旧三模式输出逐字节一致);脚本以扩展名自证模块类型,对宿主项目 package.json 的 `"type"` 声明免疫(ESM 宿主曾使自检脚本加载失败,PR 自检硬依赖之);调用命令同步(install.md 安装 / 初始化验收、PR 自检、README 目录树、writing-style 双形式示例)。破坏性变更:已初始化项目整文件替换脚本、同步调用命令、删除自建的 docs/package.json。提案档案 RFC-0012 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.11.0(2026-09-02):流水编号各流独立取号 —— spec 编号不沿用 brief/RFC(编号回归流内序号单一语义),跨流关联以注册表「来源」列(Specs 表新增)+ 文件头「来源」字段为权威,slug SHOULD 跨流一致;spec → tasks → design 同号链保留;structure.md 第 4 节规则与示例、workflow.md 第 3.2 节、spec-template.md 来源值域同步。提案档案 RFC-0011 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.10.0(2026-09-02):research 证据目录检查豁免 —— verify-docs.js 死链与占位检查跳过 research/ 下同 slug 证据目录(structure.md 5.2 形态:目录 X 与主文档 X.md 并存),第三方引用原文不入检查;主文档与登记义务照常;structure.md 5.2 新增「检查豁免」条款,头部注释检查项 1 补齐行内代码免检说明。提案档案 RFC-0010 存于模板仓库 meta/rfcs/(不随模板分发)。
 - v1.9.1(2026-09-02):勘误 —— meta/ 治理档案与 docs/decisions.md 中下游项目名泛化表述;meta/README.md 新增治理档案表述规则(不点名具体下游项目)。无规范条款与工具行为变化。

@@ -21,7 +21,7 @@
 |---|---|---|
 | `docs/STATUS.md` | 项目状态活文档:当前状态、进行中、下一步、工作日志(见 [workflow.md](workflow.md) 6.2 节) | 历史流水(进工作日志,只追加) |
 | `docs/decisions.md` | **模板自带**:ai-dev-template 的设计决策记录(随模板分发,初始化后保留;见 [decisions.md](../decisions.md)) | 目标项目自己的决策(走 ADR) |
-| `docs/verify-docs.js` | **模板自带**:文档自检工具(死链 / TODO 分布 / AGENTS.md 行数 / 编号配对),`node docs/verify-docs.js [--strict]` | — |
+| `docs/verify-docs.mjs` | **模板自带**:文档自检工具(死链 / TODO 分布 / AGENTS.md 行数 / 编号配对),`node docs/verify-docs.mjs [--strict]`(ESM,Node ≥ 20.11) | — |
 | `docs/briefs/` | 需求 brief(按 [brief-template.md](../briefs/brief-template.md) 实例化) | 技术方案 |
 | `docs/specs/` | 功能规格 spec 与任务拆解 tasks | 需求动机、架构决策 |
 | `docs/rfcs/` | 重大变更提案 RFC | 轻量决策(走 ADR) |

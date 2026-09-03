@@ -28,5 +28,6 @@
 | RFC-0009 | 流水产物模板验收口径增补(外部实践吸收) | Accepted | 2026-09-02 | [0009-template-acceptance.md](rfcs/0009-template-acceptance.md) |
 | RFC-0010 | research 证据目录的检查豁免(verify-docs 结构语义豁免) | Accepted | 2026-09-02 | [0010-evidence-dir-exempt.md](rfcs/0010-evidence-dir-exempt.md) |
 | RFC-0011 | 流水编号各流独立取号(spec 编号不沿用来源) | Accepted | 2026-09-02 | [0011-per-flow-numbering.md](rfcs/0011-per-flow-numbering.md) |
+| RFC-0012 | verify-docs 迁移 ESM(分发面模块类型免疫) | Accepted | 2026-09-03 | [0012-verify-docs-esm.md](rfcs/0012-verify-docs-esm.md) |
 
-模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.js --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。
+模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.mjs --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

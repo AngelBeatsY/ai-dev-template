@@ -9,8 +9,8 @@ DONE WHEN(按动词):
 
 | 动词 | 完成 |
 |---|---|
-| 安装 | `AGENTS.md`、`docs/`、`.github/` 就位(或新仓库已创建);`node docs/verify-docs.js` 通过 |
-| 初始化 | `node docs/verify-docs.js --strict` 通过;初始化提交完成(`chore: initialize from ai-dev-template`) |
+| 安装 | `AGENTS.md`、`docs/`、`.github/` 就位(或新仓库已创建);`node docs/verify-docs.mjs` 通过 |
+| 初始化 | `node docs/verify-docs.mjs --strict` 通过;初始化提交完成(`chore: initialize from ai-dev-template`) |
 | 安装并初始化 | 两者全部达成 |
 
 > 模板仓库根目录的 `meta/` 与 `manifest.txt` 是**模板自身的治理档案与发布清单**,不属于分发内容;`manifest.txt` 同时是场景二的复制白名单。
@@ -52,7 +52,7 @@ npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
 4. 初始化 `docs/STATUS.md`:当前状态、下一步,工作日志写第一条初始化记录。
 5. 改写根 README 为项目说明,删除「模板使用」「安装」「初始化」「日常使用」「FAQ」「文档导读」等模板专属章节。
 6. 在 `AGENTS.md` 第 1 节填入项目一句话说明,其余章节不动。
-7. 运行 `node docs/verify-docs.js --strict`,必须通过(活文档占位清零);失败则逐一定位补填。
+7. 运行 `node docs/verify-docs.mjs --strict`,必须通过(活文档占位清零);失败则逐一定位补填。
 8. **场景一的项目删除本文件(install.md)与 `meta/`、`manifest.txt`**(三者均为模板自举文件,使命完成即删;删除 `meta/` 与 `manifest.txt` 与删本文件是同一步)。场景二没有本文件与 meta/,跳过。建议提交:`chore: initialize from ai-dev-template`。
 
 EXECUTE NOW:按动词完成上述步骤,达成 DONE WHEN。
