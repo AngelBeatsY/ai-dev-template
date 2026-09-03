@@ -1,12 +1,12 @@
 # AGENTS.md — AI 协作规范
 
-本文件是所有 AI 编码工具(Claude Code、Cursor、Copilot 等)在本仓库的**唯一规范入口**。任何会话开始、执行任何非常规任务前 MUST 先读本文件。修改本文件视为重大变更(见 R8)。最后更新:2026-09-02。
+本文件是所有 AI 编码工具(Claude Code、Cursor、Copilot 等)在本仓库的**唯一规范入口**。任何会话开始、执行任何非常规任务前 MUST 先读本文件。修改本文件视为重大变更(见 R8)。最后更新:2026-09-03。
 
 ## 1. 项目简介与规范地图
 
 TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 
-> 基于 ai-dev-template v1.1.0 初始化(模板升级时更新此版本号作为比对基准)。
+> TODO(template):基于 ai-dev-template vX.Y.Z 初始化(初始化时填入实际版本号,模板升级时更新此版本号作为比对基准)。
 
 - `docs/conventions/` — 规范:怎么做事(工作流、git、开发、目录、书写)。
 - `docs/briefs|specs|rfcs|adr/` — 工作流产物:做事的记录,状态登记在 `docs/README.md`。
