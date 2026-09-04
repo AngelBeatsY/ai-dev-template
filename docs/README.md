@@ -36,6 +36,14 @@
 | (示例行,首次使用时删除)research/prior-art.md | 先例工具深挖:主文档结论(含证据清单) |
 | (示例行,首次使用时删除)research/prior-art/ | 证据目录:fetch.js 取证脚本、raw/ 原始 JSON、src/ 源码原文 |
 
+## 自建活文档清单
+
+按 [conventions/structure.md](conventions/structure.md) 第 5 节决策树自建的目录(docs/deploy/、docs/design/、docs/plan/ 等)中的活文档,每份 MUST 在本表登记一行(与文件创建同一 commit,义务见 [conventions/workflow.md](conventions/workflow.md) 6.3)—— 登记即合法,漏登视为未完成(verify-docs 双向校验)。
+
+| 文件 | 内容 |
+|---|---|
+| (示例行,首次使用时删除)plan/roadmap.md | 版本路线:已交付项随 merge 勾选 |
+
 ## 阅读矩阵
 
 | 你是谁 / 场景 | 先读 | 再读 |

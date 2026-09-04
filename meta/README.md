@@ -29,5 +29,7 @@
 | RFC-0010 | research 证据目录的检查豁免(verify-docs 结构语义豁免) | Accepted | 2026-09-02 | [0010-evidence-dir-exempt.md](rfcs/0010-evidence-dir-exempt.md) |
 | RFC-0011 | 流水编号各流独立取号(spec 编号不沿用来源) | Accepted | 2026-09-02 | [0011-per-flow-numbering.md](rfcs/0011-per-flow-numbering.md) |
 | RFC-0012 | verify-docs 迁移 ESM(分发面模块类型免疫) | Accepted | 2026-09-03 | [0012-verify-docs-esm.md](rfcs/0012-verify-docs-esm.md) |
+| RFC-0013 | spec 拆分判据显式化(功能级施工文档 1:N 不采纳) | Accepted | 2026-09-03 | [0013-spec-split-criteria.md](rfcs/0013-spec-split-criteria.md) |
+| RFC-0014 | 自建活文档登记义务与门禁(枚举泛化 + 机器兜底捆绑) | Accepted | 2026-09-04 | [0014-self-built-live-docs.md](rfcs/0014-self-built-live-docs.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.mjs --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

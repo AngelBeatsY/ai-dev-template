@@ -82,6 +82,8 @@ docs/adr/0001-use-postgresql.md
 └─ 都不是 → 大概率不该创建这份文档
 ```
 
+自建目录(docs/deploy/、docs/design/、docs/plan/)中的活文档 MUST 在 `docs/README.md` 自建活文档清单登记(与文件创建同一 commit),维护义务见 [workflow.md](workflow.md) 第 6.3 节。
+
 ### 5.1 design/ 目录组织(自建该目录的项目)
 
 设计说明(markdown)是主文档与**唯一入口**,多文件资产(html 原型、效果图 png、tokens css 等)按设计编号归档:
@@ -98,7 +100,7 @@ docs/design/
 - **原型与生产分离**:design/ 只放原型与参考;会被产品采用的样式 / token 由实现任务落地到代码目录,不在 design/ 维护双份。
 - 资产文件不带版本号,设计迭代在说明文档记变更,文件替换交由 git 历史。
 - 设计稿不进 docs/README.md 注册表,由来源 spec「接口设计」节链接检索。
-- 非挂靠 spec 的持久参考(页面规范、设计系统)不从 design-template 实例化、不编号,属活文档类(第 3 节判据),每项目一份持续更新,不入注册表;完整生命周期规则待真实使用后按需增补。
+- 非挂靠 spec 的持久参考(页面规范、设计系统)不从 design-template 实例化、不编号,属活文档类(第 3 节判据),每项目一份持续更新,在 `docs/README.md` 自建活文档清单登记(义务见 [workflow.md](workflow.md) 第 6.3 节);完整生命周期规则待真实使用后按需增补。
 
 ### 5.2 research/ 多文件调研组织
 

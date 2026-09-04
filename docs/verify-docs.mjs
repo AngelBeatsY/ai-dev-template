@@ -7,7 +7,8 @@
  *             —— 用于初始化验收与初始化完成后的 CI。
  *   --template:仅模板仓库自身使用 —— 校验发布面:manifest.txt 列出的路径存在,
  *              且根目录除清单项、meta/ 与清单允许的文件外无其他顶层条目
- *              (防止模板治理文件放错位置静默泄漏到下游项目)。
+ *              (防止模板治理文件放错位置静默泄漏到下游项目);并校验 meta/rfcs
+ *              注册表登记完整(检查 9)。
  * 检查项:
  *   1. 死链:全部 markdown 相对链接指向的文件必须存在(围栏代码块与行内代码内的引用原文不检查;
  *      research/ 同 slug 证据目录内的第三方引用原文不检查,见 structure.md 5.2)
@@ -18,9 +19,14 @@
  *   6. research 清单登记:docs/research/ 每项调研已在 docs/README.md 清单表登记,且引用路径存在
  *   7. 编号文件命名合式:briefs/specs/rfcs/adr/design 五目录的编号文件名匹配各自模式,
  *      单类型目录(rfcs/adr/design)不接受类型后缀(RFC-0004)
+ *   8. 自建活文档登记:docs/ 下自建目录(structure.md 第 2 节固定目录之外)与 design/ 顶层的
+ *      活文档已在 docs/README.md 自建活文档清单登记,清单引用路径存在(双向;登记即合法,
+ *      workflow.md 6.3;research/ 归检查 6,tech/ 登记载体为 tech-stack.md 声明,均不双查)
+ *   9. (--template)meta/rfcs 注册表登记:meta/rfcs/ 每份 RFC 已在 meta/README.md 注册表
+ *      登记(按编号匹配)且链接目标存在(实测漏登过 RFC-0013)
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  *
- * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[7] 即输出顺序,[5] 仅 --template 运行);
+ * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[9] 即输出顺序,[5] 与 [9] 仅 --template 运行);
  * 每个检查是独立函数,返回 { fails, notes, okLine } 而不做全局副作用 ——
  *   fails   失败消息(空数组 = 本检查通过,全部 fails 决定退出码);
  *   notes   信息性行(不参与判定);
@@ -35,6 +41,7 @@ import path from 'node:path';
 const root = path.resolve(import.meta.dirname, '..');
 const DOC_DIR = path.join(root, 'docs');
 const RESEARCH_DIR = path.join(DOC_DIR, 'research');
+const META_DIR = path.join(root, 'meta');
 
 const isStrict = process.argv.includes('--strict');
 const isTemplate = process.argv.includes('--template');
@@ -253,6 +260,93 @@ function checkNumberedFileNaming() {
   return { fails, okLine: `✓ ${numberedFiles} 个编号文件命名合式` };
 }
 
+/**
+ * 检查 8:自建活文档登记 —— workflow.md 6.3:自建目录(structure.md 第 5 节决策树)中的活文档
+ * MUST 在 docs/README.md「自建活文档清单」登记(与文件创建同一 commit),漏登视为未完成。
+ * 双向校验:清单引用的路径必须存在;docs/ 下自建活文档必须登记(登记即合法,不审内容)。
+ * 对象集与排除集(与 structure.md 第 2 节目录表同源,模板新增固定目录时同步):
+ *   - 顶层固定文件(STATUS/README/decisions)与五编号目录、research/、tech/、conventions/、
+ *     archive/ 不查(分别归四张注册表、检查 6、tech-stack.md 声明 + --strict 活文档清单,避免双查);
+ *   - design/ 仅查顶层无编号非 template 活文档(assets/ 归 5.1 资产清单,对称检查 7 口径);
+ *   - 自建目录内全部 markdown 与 docs/ 顶层散 markdown 须登记。
+ * 清单采用节内表格提取(README 各节遍布路径引用,全局匹配必误伤);示例行不检查。
+ */
+function checkSelfBuiltRegistry() {
+  const registered = new Set();
+  const fails = [];
+  let inSection = false;
+  for (const line of readText(path.join(DOC_DIR, 'README.md')).split('\n')) {
+    if (line.startsWith('## ')) { inSection = line.includes('自建活文档清单'); continue; }
+    if (!inSection || line.includes('示例行')) continue;
+    const cell = line.match(/^\|\s*([^|]+?)\s*\|/);
+    if (!cell) continue;
+    const link = cell[1].match(/\(([^)]+)\)/);  // 兼容 [文字](路径) 链接形式
+    const p = (link ? link[1] : cell[1]).replace(/\/$/, '').trim();
+    if (!/^[A-Za-z0-9][A-Za-z0-9._/-]*$/.test(p) || !(p.includes('/') || p.includes('.'))) continue;  // 表头等非路径单元格
+    registered.add(p);
+    if (!fs.existsSync(path.join(DOC_DIR, p))) {
+      fails.push(`清单登记的文件不存在:${p}(删除该行或修正路径,docs/README.md 自建活文档清单)`);
+    }
+  }
+  const unregistered = [];
+  const requireRegistered = (inDocs) => { if (!registered.has(inDocs)) unregistered.push(inDocs); };
+  const walkDir = (dir, inDocsBase) => {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.isDirectory()) walkDir(path.join(dir, e.name), `${inDocsBase}/${e.name}`);
+      else if (e.name.endsWith('.md')) requireRegistered(`${inDocsBase}/${e.name}`);
+    }
+  };
+  const FIXED_TOP = new Set(['STATUS.md', 'README.md', 'decisions.md']);
+  const FIXED_DIRS = new Set(['briefs', 'specs', 'rfcs', 'adr', 'design', 'research', 'tech', 'conventions', 'archive']);
+  for (const e of fs.readdirSync(DOC_DIR, { withFileTypes: true })) {
+    if (e.isFile()) {
+      if (e.name.endsWith('.md') && !FIXED_TOP.has(e.name)) requireRegistered(e.name);
+    } else if (FIXED_DIRS.has(e.name)) {
+      if (e.name === 'design') {  // 仅查顶层无编号活文档(assets/ 归 5.1 资产清单,对称检查 7)
+        for (const f of fs.readdirSync(path.join(DOC_DIR, 'design'))) {
+          if (f.endsWith('.md') && !f.endsWith('-template.md') && !/^\d{4}-/.test(f)) requireRegistered(`design/${f}`);
+        }
+      }
+    } else {
+      walkDir(path.join(DOC_DIR, e.name), e.name);  // 自建目录:全部 markdown 须登记
+    }
+  }
+  for (const inDocs of unregistered) {
+    fails.push(`自建活文档未登记:docs/${inDocs}(登记到 docs/README.md 自建活文档清单,义务见 workflow.md 6.3)`);
+  }
+  const okLine = fails.length === 0
+    ? (registered.size ? `✓ ${registered.size} 项自建活文档登记完整` : '· 尚无自建活文档')
+    : null;
+  return { fails, okLine };
+}
+
+/**
+ * 检查 9(--template):meta/rfcs 注册表登记 —— meta/README.md 的 RFC 注册表是模板治理档案的
+ * 唯一索引;meta/ 不随模板分发,本检查与检查 5 同挂 --template,对下游零成本。每份
+ * meta/rfcs/NNNN-*.md 必须在注册表登记一行(按编号匹配)且链接目标存在(实测漏登过 RFC-0013)。
+ */
+function checkMetaRfcRegistry() {
+  const rfcDir = path.join(META_DIR, 'rfcs');
+  if (!fs.existsSync(rfcDir)) return {};
+  const readmeText = readText(path.join(META_DIR, 'README.md'));
+  const registeredNums = new Set(
+    [...readmeText.matchAll(/^\|\s*RFC-(\d{4})/gm)].map(m => m[1]),
+  );
+  const fails = [];
+  for (const link of new Set([...readmeText.matchAll(/\((rfcs\/[^)]+\.md)\)/g)].map(m => m[1]))) {
+    if (!fs.existsSync(path.join(META_DIR, link))) fails.push(`RFC 注册表链接的文件不存在:meta/${link}`);
+  }
+  const files = fs.readdirSync(rfcDir).filter(n => n.endsWith('.md') && /^\d{4}-/.test(n));
+  const unregistered = files.filter(n => !registeredNums.has(n.slice(0, 4)));
+  for (const name of unregistered) {
+    fails.push(`模板 RFC 未登记注册表:meta/rfcs/${name}(meta/README.md RFC 注册表)`);
+  }
+  const okLine = unregistered.length === 0
+    ? (files.length ? `✓ ${files.length} 份模板 RFC 全部登记` : '· 尚无模板 RFC')
+    : null;
+  return { fails, okLine };
+}
+
 // ---------- 主流程 ----------
 
 const mdFiles = collectMarkdownFiles();
@@ -265,6 +359,8 @@ const CHECKS = [
   { title: '[5] 发布面校验(--template:manifest.txt 白名单 + 根目录无清单外条目)', when: isTemplate, run: checkReleaseSurface },
   { title: '[6] research 清单登记(docs/README.md research 文件清单表)', run: checkResearchRegistry },
   { title: '[7] 编号文件命名合式(五目录编号文件命名模式)', run: checkNumberedFileNaming },
+  { title: '[8] 自建活文档登记(docs/README.md 自建活文档清单,双向)', run: checkSelfBuiltRegistry },
+  { title: '[9] meta/rfcs 注册表登记(--template:每份模板 RFC 已登记且链接存在)', when: isTemplate, run: checkMetaRfcRegistry },
 ];
 
 let failures = 0;

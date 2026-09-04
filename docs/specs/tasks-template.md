@@ -23,7 +23,7 @@ T 为实现任务,TF 为固定收尾任务(不可删除)。
   - 涉及文件:<路径列表>
   - 验收点:<完成标志>
 - [ ] **T2**:…
-- [ ] **TF1**:更新相关文档(tech-stack.md / architecture.md / 受影响的 spec)
+- [ ] **TF1**:更新相关文档(tech-stack.md / architecture.md / 受影响的 spec;登记的自建活文档如有)
 - [ ] **TF2**:更新 `docs/README.md` 注册表(spec 状态转 Implemented)
 - [ ] **TF3**:对照 SPEC-NNNN 的 FR/ER 逐条自检,在下方自检表记录结果
 
