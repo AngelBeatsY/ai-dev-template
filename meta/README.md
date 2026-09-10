@@ -31,5 +31,6 @@
 | RFC-0012 | verify-docs 迁移 ESM(分发面模块类型免疫) | Accepted | 2026-09-03 | [0012-verify-docs-esm.md](rfcs/0012-verify-docs-esm.md) |
 | RFC-0013 | spec 拆分判据显式化(功能级施工文档 1:N 不采纳) | Accepted | 2026-09-03 | [0013-spec-split-criteria.md](rfcs/0013-spec-split-criteria.md) |
 | RFC-0014 | 自建活文档登记义务与门禁(枚举泛化 + 机器兜底捆绑) | Accepted | 2026-09-04 | [0014-self-built-live-docs.md](rfcs/0014-self-built-live-docs.md) |
+| RFC-0015 | 死链判据收紧 —— 仓库内且未被 git 忽略(verify-docs 有效性口径) | Accepted | 2026-09-10 | [0015-dead-link-validity.md](rfcs/0015-dead-link-validity.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.mjs --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

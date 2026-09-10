@@ -10,7 +10,8 @@
  *              (防止模板治理文件放错位置静默泄漏到下游项目);并校验 meta/rfcs
  *              注册表登记完整(检查 9)。
  * 检查项:
- *   1. 死链:全部 markdown 相对链接指向的文件必须存在(围栏代码块与行内代码内的引用原文不检查;
+ *   1. 死链:相对链接目标必须存在、位于仓库根之内且未被 git 忽略(仓库外链接与被忽略目标
+ *      单独报错,URL 编码路径解码后判定;围栏代码块与行内代码内的引用原文不检查;
  *      research/ 同 slug 证据目录内的第三方引用原文不检查,见 structure.md 5.2)
  *   2. TODO(template) 分布:初始化完成后活文档应为零(其余文件中的出现是占位约定的定义文字)
  *   3. AGENTS.md 行数:不得超过 150(硬上限,见该文件第 9 节)
@@ -97,10 +98,80 @@ function collectMarkdownFiles() {
   return files;
 }
 
+// ---------- gitignore 忽略判定(RFC-0015)----------
+// 链接目标的「未被 git 忽略」判定:规则源 = .git/info/exclude + 仓库根 .gitignore +
+// 目标沿途各目录的嵌套 .gitignore,按目录深度浅→深应用、文件内后者胜出(与 git 一致);
+// 解析结果按规则文件路径缓存。已知偏差全部定向漏报侧(退回现状,不产生新失败):
+// 字符类与反斜杠转义按字面匹配;git 对已排除目录不再下降、`!` 无法恢复其内文件,
+// 本实现按路径独立判定 —— `build/` + `!build/keep.md` 在此判 keep.md 未忽略。
+
+const ignoreRulesCache = new Map();  // 规则文件绝对路径 -> 编译后的规则数组
+
+function compileIgnoreRules(file, base) {
+  const rules = [];
+  let text;
+  try { text = readText(file); } catch { return rules; }  // 无此文件 = 无规则
+  for (const raw of text.split('\n')) {
+    let line = raw.trim();
+    if (!line || line.startsWith('#')) continue;
+    const negated = line.startsWith('!');
+    if (negated) line = line.slice(1);
+    let dirOnly = false;
+    if (line.endsWith('/')) { dirOnly = true; line = line.slice(0, -1); }
+    const anchored = line.includes('/');  // 含 / 的模式锚定于规则文件所在目录,否则匹配任意层级段名
+    const source = line
+      .replace(/[.+^${}()|[\]\\]/g, '\\$&')   // 正则元字符转义(含 \ 本身:反斜杠按字面,* ? / 留给通配编译)
+      .replace(/\*\*\//g, '\u0000')         // 占位避免替换产物被后续步骤二次改写
+      .replace(/\/\*\*/g, '\u0001')
+      .replace(/\*\*/g, '\u0002')
+      .replace(/\*/g, '[^/]*')              // * 与 ? 不跨 /
+      .replace(/\?/g, '[^/]')
+      .replace(/\u0000/g, '(?:[^/]+/)*')    // **/ 任意层级目录前缀
+      .replace(/\u0001/g, '(?:/.+)?')       // /** 任意后缀
+      .replace(/\u0002/g, '.*');
+    rules.push({ negated, dirOnly, anchored, base, re: new RegExp(`^${source}$`) });
+  }
+  return rules;
+}
+
+/** 目标是否被 git 忽略:候选 = 目标自身 + 全部祖先目录(目录规则如 build/ 经祖先命中即排除其下文件)。 */
+function isIgnored(resolved) {
+  const candidates = [];  // { rel 相对 root 的正斜杠路径, isDir },浅→深
+  let dir = resolved;
+  while (dir !== root) {
+    const rel = path.relative(root, dir).replace(/\\/g, '/');
+    candidates.unshift({ rel, isDir: dir !== resolved });
+    dir = path.dirname(dir);
+  }
+  // 规则应用顺序:.git/info/exclude → 根 .gitignore → 嵌套(浅→深,深者覆盖)
+  const ruleFiles = [
+    { file: path.join(root, '.git', 'info', 'exclude'), base: root },
+    { file: path.join(root, '.gitignore'), base: root },
+  ];
+  for (const { rel, isDir } of candidates) {
+    if (isDir) ruleFiles.push({ file: path.join(root, rel, '.gitignore'), base: path.join(root, rel) });
+  }
+  let ignored = false;
+  for (const { file, base } of ruleFiles) {
+    let rules = ignoreRulesCache.get(file);
+    if (!rules) { rules = compileIgnoreRules(file, base); ignoreRulesCache.set(file, rules); }
+    for (const rule of rules) {
+      for (const { rel, isDir } of candidates) {
+        if (rule.dirOnly && !isDir) continue;
+        const relToBase = path.relative(base, path.join(root, rel)).replace(/\\/g, '/');
+        if (relToBase.startsWith('..') || path.isAbsolute(relToBase)) continue;  // base 之外的路径不受该文件规则影响
+        const hit = rule.anchored ? rule.re.test(relToBase) : rule.re.test(rel.split('/').pop());
+        if (hit) { ignored = !rule.negated; break; }  // 最后命中的规则胜出
+      }
+    }
+  }
+  return ignored;
+}
+
 // ---------- 各项检查 ----------
 // 约定:每个检查函数返回 { fails, notes, okLine },判定口径见头注释「代码结构」。
 
-/** 检查 1:全部 markdown 相对链接指向的文件必须存在。 */
+/** 检查 1:相对链接目标必须存在、位于仓库根之内且未被 git 忽略(RFC-0015 判据三分)。 */
 function checkDeadLinks(mdFiles) {
   const fails = [];
   let linkCount = 0;
@@ -109,15 +180,28 @@ function checkDeadLinks(mdFiles) {
     // 链接写法的示例),渲染器不将其作为链接;行内代码语义即字面文本(RFC-0002 开放问题③)
     const scanText = readText(f).replace(FENCED_CODE, '').replace(INLINE_CODE, '');
     for (const m of scanText.matchAll(MD_LINK)) {
-      const target = m[1].split('#')[0].trim();  // 剥 #L 行锚:行锚由 GitHub 解析,只校验文件存在
+      let target = m[1].split('#')[0].trim();  // 剥 #L 行锚:行锚由 GitHub 解析,只校验文件存在
+      try {
+        target = decodeURIComponent(target);  // URL 编码路径(%20 等)渲染器支持,解码后判定(RFC-0015 §1.4)
+      } catch { /* 畸形 % 序列按原文判定 */ }
       if (!target || EXTERNAL_LINK.test(target)) continue;
       linkCount++;
-      if (!fs.existsSync(path.resolve(path.dirname(f), target))) {
+      const resolved = path.resolve(path.dirname(f), target);
+      const rel = path.relative(root, resolved);
+      if (rel.startsWith('..') || path.isAbsolute(rel)) {
+        fails.push(`仓库外链接 ${relFromRoot(f)} -> ${target}`);  // 有效性绑定检查者机器,跨机器不可复现
+        continue;
+      }
+      if (!fs.existsSync(resolved)) {
         fails.push(`死链 ${relFromRoot(f)} -> ${target}`);
+        continue;
+      }
+      if (isIgnored(resolved)) {
+        fails.push(`链接目标被 git 忽略(克隆后不存在)${relFromRoot(f)} -> ${target}`);
       }
     }
   }
-  return { fails, okLine: `✓ ${linkCount} 个相对链接全部有效` };
+  return { fails, okLine: `✓ ${linkCount} 个相对链接全部有效(仓库内、未被 git 忽略)` };
 }
 
 /** 活文档 = STATUS.md + docs/tech/ 全部非 template 的 markdown(RFC-0002:tech/ 可增补,清单动态跟随)。 */
