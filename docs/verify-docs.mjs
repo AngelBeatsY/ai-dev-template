@@ -25,9 +25,12 @@
  *      workflow.md 6.3;research/ 归检查 6,tech/ 登记载体为 tech-stack.md 声明,均不双查)
  *   9. (--template)meta/rfcs 注册表登记:meta/rfcs/ 每份 RFC 已在 meta/README.md 注册表
  *      登记(按编号匹配)且链接目标存在(实测漏登过 RFC-0013)
+ *  10. 体系文档忽略检测:docs/ 全部 markdown(含 research 证据目录)与根级 AGENTS/README/
+ *      install(存在才查)命中 git 忽略规则即报 —— 体系文档失踪(克隆后不存在)无环节可见;
+ *      私有内容放点前缀目录,不入检查(structure.md 5.3)(RFC-0016)
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  *
- * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[9] 即输出顺序,[5] 与 [9] 仅 --template 运行);
+ * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[10] 即输出顺序,[5] 与 [9] 仅 --template 运行);
  * 每个检查是独立函数,返回 { fails, notes, okLine } 而不做全局副作用 ——
  *   fails   失败消息(空数组 = 本检查通过,全部 fails 决定退出码);
  *   notes   信息性行(不参与判定);
@@ -304,7 +307,7 @@ function checkResearchRegistry() {
     registered.add(p);
     if (!fs.existsSync(path.join(DOC_DIR, p))) fails.push(`清单表引用的调研不存在:${p}`);
   }
-  const items = fs.readdirSync(RESEARCH_DIR).filter(n => !n.endsWith('-template.md'));
+  const items = fs.readdirSync(RESEARCH_DIR).filter(n => !n.startsWith('.') && !n.endsWith('-template.md'));  // 点前缀:私有内容通道(structure.md 5.3),不要求登记
   const unregistered = items.filter(name => !registered.has(`research/${name}`));
   for (const name of unregistered) {
     fails.push(`调研未登记清单表:research/${name}(docs/README.md research 文件清单)`);
@@ -376,6 +379,7 @@ function checkSelfBuiltRegistry() {
   const requireRegistered = (inDocs) => { if (!registered.has(inDocs)) unregistered.push(inDocs); };
   const walkDir = (dir, inDocsBase) => {
     for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.name.startsWith('.')) continue;  // 点前缀:私有内容通道(structure.md 5.3),不入登记义务
       if (e.isDirectory()) walkDir(path.join(dir, e.name), `${inDocsBase}/${e.name}`);
       else if (e.name.endsWith('.md')) requireRegistered(`${inDocsBase}/${e.name}`);
     }
@@ -383,6 +387,7 @@ function checkSelfBuiltRegistry() {
   const FIXED_TOP = new Set(['STATUS.md', 'README.md', 'decisions.md']);
   const FIXED_DIRS = new Set(['briefs', 'specs', 'rfcs', 'adr', 'design', 'research', 'tech', 'conventions', 'archive']);
   for (const e of fs.readdirSync(DOC_DIR, { withFileTypes: true })) {
+    if (e.name.startsWith('.')) continue;  // 点前缀:私有内容通道(structure.md 5.3)
     if (e.isFile()) {
       if (e.name.endsWith('.md') && !FIXED_TOP.has(e.name)) requireRegistered(e.name);
     } else if (FIXED_DIRS.has(e.name)) {
@@ -431,6 +436,33 @@ function checkMetaRfcRegistry() {
   return { fails, okLine };
 }
 
+/**
+ * 检查 10:体系文档忽略检测(RFC-0016)—— 文档体系随 git 分发,体系文档被忽略 = 克隆后
+ * 失踪,且无任何环节可见(死链只从指向它的链接间接暴露,报的是链接错)。对象:docs/ 全部
+ * markdown(含 research 证据目录 —— 5.2 文本证据 MUST 进 git,虽不入死链扫描集合但义务独立)
+ * + 根级 AGENTS/README/install 固定三件(存在才查,场景一/二分发差异自动消化;下游无
+ * manifest.txt 不可依赖)。跳过点前缀 —— 私有内容通道(structure.md 5.3)。零豁免通道:
+ * docs/ 内被忽略的 md 无合法终态。默认模式运行,不挂 --strict(失踪是硬错误非待办)。
+ */
+function checkIgnoredDocs() {
+  const files = [];
+  (function walk(dir) {
+    for (const e of fs.readdirSync(dir, { withFileTypes: true })) {
+      if (e.name.startsWith('.') || e.name === 'node_modules') continue;
+      const full = path.join(dir, e.name);
+      if (e.isDirectory()) walk(full);
+      else if (e.name.endsWith('.md')) files.push(full);
+    }
+  })(DOC_DIR);
+  for (const name of ['AGENTS.md', 'README.md', 'install.md']) {
+    const full = path.join(root, name);
+    if (fs.existsSync(full)) files.push(full);
+  }
+  const fails = files.filter(f => isIgnored(f))
+    .map(f => `体系文档被 git 忽略(克隆后不存在):${relFromRoot(f)}(修正忽略规则;私有内容移点前缀目录,如 docs/.drafts/,见 structure.md 5.3)`);
+  return { fails, okLine: `✓ ${files.length} 份体系文档全部未被 git 忽略` };
+}
+
 // ---------- 主流程 ----------
 
 const mdFiles = collectMarkdownFiles();
@@ -445,6 +477,7 @@ const CHECKS = [
   { title: '[7] 编号文件命名合式(五目录编号文件命名模式)', run: checkNumberedFileNaming },
   { title: '[8] 自建活文档登记(docs/README.md 自建活文档清单,双向)', run: checkSelfBuiltRegistry },
   { title: '[9] meta/rfcs 注册表登记(--template:每份模板 RFC 已登记且链接存在)', when: isTemplate, run: checkMetaRfcRegistry },
+  { title: '[10] 体系文档忽略检测(docs/ 含证据目录 + 根级三件,禁被 git 忽略)', run: checkIgnoredDocs },
 ];
 
 let failures = 0;
