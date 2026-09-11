@@ -29,7 +29,8 @@
  *      install(存在才查)命中 git 忽略规则即报 —— 体系文档失踪(克隆后不存在)无环节可见;
  *      私有内容放点前缀目录,不入检查(structure.md 5.3)(RFC-0016)
  *  11. 文件名合式:docs/ 散文档(编号文件归检查 7)与根级三件的文件名必须 kebab-case
- *      (豁免大写固定名 AGENTS/README/STATUS;点前缀与证据目录豁免)(RFC-0017)
+ *      (豁免大写固定名 AGENTS/README/STATUS;点前缀与证据目录豁免;--template 时追加
+ *      meta/ 治理面)(RFC-0017)
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  *
  * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[11] 即输出顺序,[5] 与 [9] 仅 --template 运行);
@@ -467,17 +468,23 @@ function checkIgnoredDocs() {
 
 /**
  * 检查 11:文件名 kebab-case 合式(RFC-0017)—— structure.md 第 4 节既存 MUST 的机器兜底
- * (检查 7 只覆盖五编号目录的编号文件)。对象:mdFiles + 根级固定三件(存在才查,同检查 10);
- * 仅排除检查 7 五目录内的编号文件(防双查)—— 管辖外路径的编号形态文件(meta/rfcs 模板 RFC、
- * archive 归档件)仍归本检查,否则成无人管辖盲区。点前缀与 research 证据目录经 mdFiles
- * 天然豁免(私有内容通道 / 第三方引用原文命名)。门禁口径:违规无中间态语义,报告模式会被
- * 忽略(开放问题定案,见 RFC-0017)。
+ * (检查 7 只覆盖五编号目录的编号文件)。对象 = 体系面:docs/ 全域散文档 + 根级固定三件
+ * (存在才查,同检查 10);--template 追加 meta/ 治理面(meta/ 不随分发,下游不存在,零成本)。
+ * 体系外路径(src/tests 等代码仓树)不归本检查 —— 测试产物命名(类型中点如 *.golden.md)
+ * 归各项目测试惯例(初版全仓行走曾致下游 tests/ 9/9 全量误报,开放问题①「管辖外无误报风险」
+ * 断言被实测证伪后收窄,见 RFC-0017 变更历史)。仅排除检查 7 五目录内的编号文件(防双查)
+ * —— meta/rfcs 编号形态 RFC(管辖外编号形态)仍归本检查,盲区封堵不回退;点前缀与
+ * research 证据目录经 mdFiles 天然豁免(私有内容通道 / 第三方引用原文命名)。门禁口径:
+ * 违规无中间态语义,报告模式会被忽略(开放问题定案,见 RFC-0017)。
  */
 const KEBAB_MD = /^[a-z0-9]+(-[a-z0-9]+)*\.md$/;
 const FIXED_UPPER = new Set(['AGENTS.md', 'README.md', 'STATUS.md']);
 
 function checkFileNameKebab(mdFiles) {
-  const objects = [...mdFiles];
+  const objects = mdFiles.filter(f => relFromRoot(f).startsWith('docs/'));  // 体系面:docs/ 全域
+  if (isTemplate && fs.existsSync(META_DIR)) {
+    objects.push(...mdFiles.filter(f => relFromRoot(f).startsWith('meta/')));  // --template:meta/ 治理面
+  }
   for (const name of ['AGENTS.md', 'README.md', 'install.md']) {
     const full = path.join(root, name);
     if (fs.existsSync(full)) objects.push(full);
@@ -512,7 +519,7 @@ const CHECKS = [
   { title: '[8] 自建活文档登记(docs/README.md 自建活文档清单,双向)', run: checkSelfBuiltRegistry },
   { title: '[9] meta/rfcs 注册表登记(--template:每份模板 RFC 已登记且链接存在)', when: isTemplate, run: checkMetaRfcRegistry },
   { title: '[10] 体系文档忽略检测(docs/ 含证据目录 + 根级三件,禁被 git 忽略)', run: checkIgnoredDocs },
-  { title: '[11] 文件名合式(kebab-case:散文档 + 根级三件,编号文件归检查 7)', run: () => checkFileNameKebab(mdFiles) },
+  { title: '[11] 文件名合式(kebab-case:docs/ 散文档 + 根级三件,编号文件归检查 7;--template 含 meta/)', run: () => checkFileNameKebab(mdFiles) },
 ];
 
 let failures = 0;
