@@ -28,9 +28,11 @@
  *  10. 体系文档忽略检测:docs/ 全部 markdown(含 research 证据目录)与根级 AGENTS/README/
  *      install(存在才查)命中 git 忽略规则即报 —— 体系文档失踪(克隆后不存在)无环节可见;
  *      私有内容放点前缀目录,不入检查(structure.md 5.3)(RFC-0016)
+ *  11. 文件名合式:docs/ 散文档(编号文件归检查 7)与根级三件的文件名必须 kebab-case
+ *      (豁免大写固定名 AGENTS/README/STATUS;点前缀与证据目录豁免)(RFC-0017)
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  *
- * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[10] 即输出顺序,[5] 与 [9] 仅 --template 运行);
+ * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[11] 即输出顺序,[5] 与 [9] 仅 --template 运行);
  * 每个检查是独立函数,返回 { fails, notes, okLine } 而不做全局副作用 ——
  *   fails   失败消息(空数组 = 本检查通过,全部 fails 决定退出码);
  *   notes   信息性行(不参与判定);
@@ -322,7 +324,7 @@ function checkResearchRegistry() {
  * 检查 7:五目录编号文件命名合式 —— structure.md 第 4 节:类型后缀仅用于同目录存在多种
  * 流水类型的场合(specs/ 的 spec 与 tasks);单类型目录目录名即类型,不加后缀;briefs/ 固定
  * .brief(RFC-0004 机器化)。design/ 仅查顶层(assets/ 由 5.1 节资产清单约束);
- * 无编号文件(持久参考活文档)不触发。
+ * 无编号文件(持久参考活文档)不触发。非编号散文档的文件名 kebab 合式归检查 11(RFC-0017)。
  */
 const NAMING_RULES = [
   { dir: 'briefs', pattern: /^\d{4}-[a-z0-9-]+\.brief\.md$/,        expect: 'NNNN-<slug>.brief.md' },
@@ -463,6 +465,38 @@ function checkIgnoredDocs() {
   return { fails, okLine: `✓ ${files.length} 份体系文档全部未被 git 忽略` };
 }
 
+/**
+ * 检查 11:文件名 kebab-case 合式(RFC-0017)—— structure.md 第 4 节既存 MUST 的机器兜底
+ * (检查 7 只覆盖五编号目录的编号文件)。对象:mdFiles + 根级固定三件(存在才查,同检查 10);
+ * 仅排除检查 7 五目录内的编号文件(防双查)—— 管辖外路径的编号形态文件(meta/rfcs 模板 RFC、
+ * archive 归档件)仍归本检查,否则成无人管辖盲区。点前缀与 research 证据目录经 mdFiles
+ * 天然豁免(私有内容通道 / 第三方引用原文命名)。门禁口径:违规无中间态语义,报告模式会被
+ * 忽略(开放问题定案,见 RFC-0017)。
+ */
+const KEBAB_MD = /^[a-z0-9]+(-[a-z0-9]+)*\.md$/;
+const FIXED_UPPER = new Set(['AGENTS.md', 'README.md', 'STATUS.md']);
+
+function checkFileNameKebab(mdFiles) {
+  const objects = [...mdFiles];
+  for (const name of ['AGENTS.md', 'README.md', 'install.md']) {
+    const full = path.join(root, name);
+    if (fs.existsSync(full)) objects.push(full);
+  }
+  const sevenDirs = new Set(NAMING_RULES.map(r => path.join(DOC_DIR, r.dir)));  // 检查 7 管辖目录(与 NAMING_RULES 同源)
+  const fails = [];
+  let count = 0;
+  for (const f of objects) {
+    const base = path.basename(f);
+    if (sevenDirs.has(path.dirname(f)) && /^\d{4}-/.test(base)) continue;  // 五目录内编号文件归检查 7
+    if (FIXED_UPPER.has(base)) continue;
+    count++;
+    if (!KEBAB_MD.test(base)) {
+      fails.push(`文件名不合 kebab-case(下划线/空格/中文/大写):${relFromRoot(f)}(structure.md 第 4 节;改名并同步修正引用,改名后检查 1 可见全部断链)`);
+    }
+  }
+  return { fails, okLine: `✓ ${count} 个文件名全部合 kebab-case` };
+}
+
 // ---------- 主流程 ----------
 
 const mdFiles = collectMarkdownFiles();
@@ -478,6 +512,7 @@ const CHECKS = [
   { title: '[8] 自建活文档登记(docs/README.md 自建活文档清单,双向)', run: checkSelfBuiltRegistry },
   { title: '[9] meta/rfcs 注册表登记(--template:每份模板 RFC 已登记且链接存在)', when: isTemplate, run: checkMetaRfcRegistry },
   { title: '[10] 体系文档忽略检测(docs/ 含证据目录 + 根级三件,禁被 git 忽略)', run: checkIgnoredDocs },
+  { title: '[11] 文件名合式(kebab-case:散文档 + 根级三件,编号文件归检查 7)', run: () => checkFileNameKebab(mdFiles) },
 ];
 
 let failures = 0;
