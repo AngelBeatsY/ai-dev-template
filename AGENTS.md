@@ -1,6 +1,6 @@
 # AGENTS.md — AI 协作规范
 
-本文件是所有 AI 编码工具(Claude Code、Cursor、Copilot 等)在本仓库的**唯一规范入口**。任何会话开始、执行任何非常规任务前 MUST 先读本文件。修改本文件视为重大变更(见 R8)。最后更新:2026-09-03。
+本文件是所有 AI 编码工具(Claude Code、Cursor、Copilot 等)在本仓库的**唯一规范入口**。任何会话开始、执行任何非常规任务前 MUST 先读本文件。修改本文件视为重大变更(见 R8)。最后更新:2026-09-15。
 
 ## 1. 项目简介与规范地图
 
@@ -44,7 +44,7 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 
 违反任何一条即为错误:
 
-- **R1** 分级为常规/重大时,spec 与 tasks 就绪前不写实现代码。
+- **R1** 分级为常规/重大时,spec 与 tasks 就绪(即开工评审通过,workflow.md 第 3.4 节)前不写实现代码。
 - **R2** 新建 brief/spec/RFC/ADR MUST 从对应 `*-template.md` 复制,编号取目录内 max+1,并在同一 commit 更新 `docs/README.md` 注册表。
 - **R3** 不新增、升级、移除任何依赖,除非任务明确要求或用户已确认。
 - **R4** 不修改状态为 Accepted/Active/Implemented 的 spec/RFC 与 ADR 正文;需要变更时走修订流程或新提案。
@@ -54,6 +54,7 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 - **R8** 不修改 `.github/`、CI 配置、目录结构、`docs/conventions/` 规范与本文件,除非任务本身就是这类改动(此时至少为重大级)。
 - **R9** 关于代码现状与外部系统行为的结论 MUST 附证据(文件与行号、实测输出或 `docs/research/` 落档结论),不得转述他人结论或凭记忆断言;未核实的显式标注「未核实」。
 - **R10** push、合并 PR、force push 与丢弃未提交改动的 git 操作 MUST 经用户当次明确授权;授权不跨会话延续。
+- **R11** 常规级及以上任务,独立验收通过并落档前不得请求合并;独立验收人 MUST NOT 参与本任务实现。
 
 ## 5. 代码与提交规范摘要
 
@@ -63,6 +64,7 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 - 分支名 `type/NNNN-slug`,如 `feat/0001-user-auth`。
 - 一个 PR 只做一件事;建议 diff < 400 行。
 - commit 前核对当前分支与暂存区(`git status` + `git diff --staged`),精确路径 `git add`,禁用 `git add -A` / `git add .`。
+- 常规级以上:开工评审与独立验收结论落档 tasks,验收人不参与实现,测试与 lint 以复跑为准。
 - 不吞异常,不空 catch;公共接口必须有测试;修 bug 先写失败测试。
 - Schema 变更只走迁移文件:已提交迁移不修改不复用版本名;无库项目不适用(见 dev-standards.md)。
 - 实现细节(linter、错误处理惯例、日志库)以 `docs/tech/tech-stack.md` 为准。
