@@ -12,11 +12,15 @@
  * 检查项:
  *   1. 死链:相对链接目标必须存在、位于仓库根之内且未被 git 忽略(仓库外链接与被忽略目标
  *      单独报错,URL 编码路径解码后判定;围栏代码块与行内代码内的引用原文不检查;
- *      research/ 同 slug 证据目录内的第三方引用原文不检查,见 structure.md 5.2)
- *   2. TODO(template) 分布:初始化完成后活文档应为零(其余文件中的出现是占位约定的定义文字)
+ *      research/ 同 slug 证据目录内的第三方引用原文不检查,见 structure.md 5.2);
+ *      对象集 = 体系面(docs/ + 根级三件),--template 追加 meta/ 治理面,体系外 markdown
+ *      不入扫描(RFC-0020 收窄)
+ *   2. TODO(template) 分布:初始化完成后活文档应为零(其余文件中的出现是占位约定的定义文字;
+ *      对象集同检查 1,RFC-0020 收窄)
  *   3. AGENTS.md 行数:不得超过 150(硬上限,见该文件第 9 节)
  *   4. 编号冲突:specs/ 目录同编号只允许一组 spec+tasks
- *   5. (--template)发布面校验:manifest.txt 路径存在 + 根目录无清单外条目
+ *   5. (--template)发布面校验:manifest.txt 路径存在 + 根目录无清单外条目(命中 git 忽略
+ *      规则的条目豁免 —— 被忽略条目不入 degit 分发面,消息含分发/治理/本地三条处置;RFC-0020)
  *   6. research 清单登记:docs/research/ 每项调研已在 docs/README.md 清单表登记,且引用路径存在
  *   7. 编号文件命名合式:briefs/specs/rfcs/adr/design 五目录的编号文件名匹配各自模式,
  *      单类型目录(rfcs/adr/design)不接受类型后缀(RFC-0004)
@@ -31,9 +35,13 @@
  *  11. 文件名合式:docs/ 散文档(编号文件归检查 7)与根级三件的文件名必须 kebab-case
  *      (豁免大写固定名 AGENTS/README/STATUS;点前缀与证据目录豁免;--template 时追加
  *      meta/ 治理面)(RFC-0017)
+ *  12. 注册表与文件头一致性:四张编号注册表(briefs/specs/rfcs/ADRs)行的状态 / 更新日期
+ *      (spec 行另含来源)与对应编号文件文件头比对 —— 状态裸枚举词合法(整格精确匹配)、
+ *      双面一致、日期逐字相等、来源双面一致;编号查找未命中回退 docs/archive/(归档件照常
+ *      比对);示例行豁免;--template 追加 meta/README RFC 注册表 ↔ meta/rfcs 面(RFC-0020)
  * 退出码:全部通过 0,有问题 1(可直接接入 CI 作为文档门禁)。
  *
- * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[11] 即输出顺序,[5] 与 [9] 仅 --template 运行);
+ * 代码结构:底部 CHECKS 数组是检查清单(标题编号 [1]-[12] 即输出顺序,[5] 与 [9] 仅 --template 运行);
  * 每个检查是独立函数,返回 { fails, notes, okLine } 而不做全局副作用 ——
  *   fails   失败消息(空数组 = 本检查通过,全部 fails 决定退出码);
  *   notes   信息性行(不参与判定);
@@ -64,11 +72,92 @@ const EXTERNAL_LINK = /^(https?:|mailto:)/;  // 出站链接,不查文件存在�
 
 const RESEARCH_REF = /research\/[A-Za-z0-9._/-]+/g;  // 清单表中登记的调研路径
 
+// ---------- 注册表 ↔ 文件头一致性常量(RFC-0020)----------
+
+const DATE_RE = /^\d{4}-\d{2}-\d{2}$/;
+
+// 判据① 词表:与 docs/README.md「生命周期」节绑定,该节修订时 MUST 同步本表(注释绑定,不动态解析)
+const STATUS_ENUMS = {
+  brief: ['Proposed', 'Accepted', 'Shelved'],
+  spec: ['Draft', 'Active', 'Implemented', 'Superseded', 'Cancelled'],
+  rfc: ['Draft', 'Review', 'Accepted', 'Rejected', 'Shelved', 'Superseded'],
+  adr: ['Proposed', 'Accepted', 'Superseded', 'Deprecated'],
+};
+
+// 四张编号注册表 ↔ 编号文件(section = docs/README.md 注册表小节标题行;specs 只取 .spec.md,tasks 无注册表行)
+const FLOW_REGISTRIES = [
+  { flow: 'brief', idRe: /BRIEF-(\d{4})/, dir: 'briefs', fileRe: /^\d{4}-[a-z0-9-]+\.brief\.md$/, section: '### Briefs' },
+  { flow: 'spec', idRe: /SPEC-(\d{4})/, dir: 'specs', fileRe: /^\d{4}-[a-z0-9-]+\.spec\.md$/, section: '### Specs' },
+  { flow: 'rfc', idRe: /RFC-(\d{4})/, dir: 'rfcs', fileRe: /^\d{4}-[a-z0-9-]+\.md$/, section: '### RFCs' },
+  { flow: 'adr', idRe: /ADR-(\d{4})/, dir: 'adr', fileRe: /^\d{4}-[a-z0-9-]+\.md$/, section: '### ADRs' },
+];
+
 // ---------- 小工具 ----------
 
 const readText = (file) => fs.readFileSync(file, 'utf-8');
 const relFromRoot = (file) => path.relative(root, file).replace(/\\/g, '/');
 const countTodo = (file) => (readText(file).match(TODO_MARKER) || []).length;
+
+// 检查 12 工具(RFC-0020):表格行拆为 trim 后的单元格数组(去掉首尾空段)
+const trimCells = (line) => line.split('|').slice(1, -1).map((c) => c.trim());
+
+/** 从 heading 行起截取表格行(跳过标题后的空行与说明文字),返回 { header, rows }(示例行豁免)。 */
+function parseRegistryTable(text, heading) {
+  const lines = text.split('\n');
+  const start = lines.findIndex((l) => l.trim() === heading);
+  if (start === -1) return { header: [], rows: [] };
+  let i = start + 1;
+  while (i < lines.length) {
+    const t = lines[i].trim();
+    if (t.startsWith('|')) break;  // 表格开始
+    if (t.startsWith('#')) return { header: [], rows: [] };  // 进入下一节仍无表格
+    i++;  // 空行 / 说明文字(meta/README 注册表节头有一段维护规则散文)
+  }
+  const raw = [];
+  for (; i < lines.length && lines[i].trim().startsWith('|'); i++) raw.push(lines[i]);
+  if (raw.length < 2) return { header: [], rows: [] };
+  return {
+    header: trimCells(raw[0]),
+    rows: raw.slice(2).map(trimCells).filter((row) => !row.some((c) => c.includes('示例行'))),
+  };
+}
+
+/** 按列名取表格行单元格;列不存在返回 undefined。 */
+const cellAt = (table, row, name) => {
+  const i = table.header.indexOf(name);
+  return i === -1 ? undefined : (row[i] ?? '');
+};
+
+/** 判据①:trim 后全等 [A-Za-z]+ 才返回该词(裸枚举词 MUST),否则 null。 */
+function exactWord(value) {
+  const w = String(value ?? '').trim();
+  return /^[A-Za-z]+$/.test(w) ? w : null;
+}
+
+/** 判据④:需求侧来源标识(BRIEF-/RFC- 编号 token 集合)或「无」;非「无」且无 token 返回 ''(必不相等,即报)。 */
+function sourceTokens(value) {
+  const v = String(value ?? '').trim();
+  if (v === '无') return '无';
+  return [...v.matchAll(/(?:BRIEF|RFC)-\d{4}/g)].map((m) => m[0]).sort().join(',');
+}
+
+/** 文件头字段行取值(如 headerField(text, '状态')),缺行返回 null。 */
+function headerField(text, name) {
+  const m = text.match(new RegExp(`^\\|\\s*${name}\\s*\\|(.*?)\\|`, 'm'));
+  return m ? m[1].trim() : null;
+}
+
+/** 注册表行 ↔ 编号文件:主目录未命中回退 docs/archive/(归档件编号与文件名不变,structure.md 第 6 节)。 */
+function findNumberedFile(baseDir, dirName, num, fileRe, archiveFallback) {
+  const dirs = [path.join(baseDir, dirName)];
+  if (archiveFallback) dirs.push(path.join(DOC_DIR, 'archive'));
+  for (const dir of dirs) {
+    if (!fs.existsSync(dir)) continue;
+    const hit = fs.readdirSync(dir).find((n) => n.startsWith(`${num}-`) && fileRe.test(n));
+    if (hit) return path.join(dir, hit);
+  }
+  return null;
+}
 
 // ---------- 文件收集 ----------
 // structure.md 5.2:research/ 下目录 X 与主文档 X.md 并存时,X 为证据目录(第三方引用原文,只读落档)。
@@ -274,6 +363,8 @@ function checkSpecNumberPairs() {
 /**
  * 检查 5(--template):发布面校验 —— manifest.txt 列出的路径存在,
  * 且根目录无清单外顶层条目(治理文件应放 meta/,分发文件应登记 manifest.txt)。
+ * 命中 git 忽略规则的条目豁免:被忽略条目不入 degit 分发面(degit 只携带跟踪内容),
+ * 发布面校验对之无的放矢;报错消息含分发 / 治理 / 本地三条处置通道(RFC-0020)。
  */
 function checkReleaseSurface() {
   const manifestPath = path.join(root, 'manifest.txt');
@@ -288,7 +379,8 @@ function checkReleaseSurface() {
   const allowed = new Set([...listed.map(s => s.replace(/\/$/, '')), 'meta', 'manifest.txt']);
   for (const e of fs.readdirSync(root, { withFileTypes: true })) {
     if (e.name.startsWith('.') || allowed.has(e.name)) continue;
-    fails.push(`根目录存在清单外顶层条目:${e.name}(治理文件应放 meta/,分发文件应登记 manifest.txt)`);
+    if (isIgnored(path.join(root, e.name))) continue;  // 被忽略条目不入 degit 分发面,豁免(RFC-0020)
+    fails.push(`根目录存在清单外顶层条目:${e.name}(分发 → 登记 manifest.txt;治理 → meta/;本地辅助 → .gitignore 或点前缀目录)`);
   }
   return { fails, okLine: `✓ ${listed.length} 个清单项全部存在,根目录无清单外条目` };
 }
@@ -504,22 +596,110 @@ function checkFileNameKebab(mdFiles) {
   return { fails, okLine: `✓ ${count} 个文件名全部合 kebab-case` };
 }
 
+/**
+ * 检查 12:注册表 ↔ 文件头一致性(RFC-0020)—— 四张编号注册表行与对应文件头比对,四判据:
+ * ①状态裸枚举词且在该流词表内(整格精确匹配;词表硬编码,注释绑定 README 生命周期节);
+ * ②状态双面一致;③更新日期双面逐字一致(任一面缺行 / 缺填即报);④来源双面一致(仅 spec 流,
+ * 「来源」列仅 Specs 表存在)。编号查找未命中回退 docs/archive/(归档不误报);示例行豁免。
+ * 能力边界:只保「已写下的两面对得上」,不保「该写的写了」——漏回填 / 该转不转归核对点链
+ * (workflow.md 3.6 / 6.1、TF2、PR 自检)。默认模式运行(漂移是硬错误非待办,同检查 10 口径);
+ * --template 追加 meta/README「## RFC 注册表」↔ meta/rfcs 面(无来源列,判据④不适用)。
+ */
+function checkRegistryHeaderConsistency() {
+  const fails = [];
+  let count = 0;
+
+  const compareLedger = (where, flow, reg, file, withSource) => {
+    const head = readText(file);
+    const headStatus = headerField(head, '状态');
+    const regWord = exactWord(reg.status);
+    const headWord = exactWord(headStatus);
+    if (!regWord || !headWord || !STATUS_ENUMS[flow].includes(regWord) || !STATUS_ENUMS[flow].includes(headWord)) {
+      fails.push(`状态值不合式(须为裸枚举词且在 ${flow} 词表内):${where} 注册表「${reg.status || '缺填'}」/ 文件头「${headStatus ?? '缺行'}」(清写裸词;取代互链移状态区注记行;生命周期见 docs/README.md)`);
+    } else if (regWord !== headWord) {
+      fails.push(`状态双面不一致:${where} 注册表「${regWord}」/ 文件头「${headWord}」(同一状态的两次呈现 MUST 同步,workflow.md 3.6;以实际状态为准同步两面)`);
+    }
+    const headDate = headerField(head, '更新日期');
+    if (!DATE_RE.test(reg.date ?? '') || !DATE_RE.test(headDate ?? '') || reg.date !== headDate) {
+      fails.push(`更新日期双面不一致或缺失:${where} 注册表「${reg.date || '缺填'}」/ 文件头「${headDate ?? '缺行'}」(= 文件最后修订日,git log -1 实测取值;文件头补行,workflow.md 6.1)`);
+    }
+    if (withSource) {
+      const headSource = headerField(head, '来源');
+      const regSrc = sourceTokens(reg.source);
+      const headSrc = sourceTokens(headSource);
+      if (regSrc !== headSrc) {
+        fails.push(`来源双面不一致:${where} 注册表「${reg.source || '缺填'}」/ 文件头「${headSource ?? '缺行'}」(以注册表「来源」列为权威对齐,docs/README.md 维护规则)`);
+      }
+    }
+    count++;
+  };
+
+  const readmeText = readText(path.join(DOC_DIR, 'README.md'));
+  for (const { flow, idRe, dir, fileRe, section } of FLOW_REGISTRIES) {
+    const table = parseRegistryTable(readmeText, section);
+    for (const row of table.rows) {
+      const num = (row[0] ?? '').match(idRe)?.[1];
+      if (!num) continue;  // 首列无本流编号的异常行;编号缺失归 PR 评审,不入本检查
+      const file = findNumberedFile(DOC_DIR, dir, num, fileRe, true);
+      if (!file) {
+        fails.push(`注册表行无对应文件:docs/${dir}/${num}-*(查找含 docs/archive/ 回退)`);
+        continue;
+      }
+      compareLedger(`docs/${dir}/${num}`, flow, {
+        status: cellAt(table, row, '状态'),
+        date: cellAt(table, row, '更新日期'),
+        source: cellAt(table, row, '来源'),
+      }, file, flow === 'spec');
+    }
+  }
+  if (isTemplate && fs.existsSync(META_DIR)) {
+    const table = parseRegistryTable(readText(path.join(META_DIR, 'README.md')), '## RFC 注册表');
+    for (const row of table.rows) {
+      const num = (row[0] ?? '').match(/RFC-(\d{4})/)?.[1];
+      if (!num) continue;
+      const file = findNumberedFile(META_DIR, 'rfcs', num, /^\d{4}-[a-z0-9-]+\.md$/, false);
+      if (!file) {
+        fails.push(`注册表行无对应文件:meta/rfcs/${num}-*`);
+        continue;
+      }
+      compareLedger(`meta/rfcs/${num}`, 'rfc', {
+        status: cellAt(table, row, '状态'),
+        date: cellAt(table, row, '更新日期'),
+      }, file, false);
+    }
+  }
+  const okLine = count === 0 ? '· 尚无编号流水产物' : `✓ ${count} 个编号状态、更新日期与来源双面一致`;
+  return { fails, okLine };
+}
+
 // ---------- 主流程 ----------
 
 const mdFiles = collectMarkdownFiles();
 
+// 检查 1 / 2 对象集 = 体系面(docs/ 全域 + 根级三件)+ --template 治理面(meta/);
+// 体系外 markdown(下游代码仓 src/tests 树等)不入死链 / 占位扫描(RFC-0020 收窄,对称 0017 口径)
+const docScopedFiles = mdFiles.filter((f) => relFromRoot(f).startsWith('docs/'));
+if (isTemplate && fs.existsSync(META_DIR)) {
+  docScopedFiles.push(...mdFiles.filter((f) => relFromRoot(f).startsWith('meta/')));
+}
+for (const name of ['AGENTS.md', 'README.md', 'install.md']) {
+  const full = path.join(root, name);
+  if (fs.existsSync(full)) docScopedFiles.push(full);
+}
+
 const CHECKS = [
-  { title: `[1] 死链检测(${mdFiles.length} 个 markdown 文件)`, run: () => checkDeadLinks(mdFiles) },
-  { title: `[2] TODO(template) 分布${isStrict ? '(strict:活文档残留即失败)' : '(报告模式,加 --strict 启用严格检查)'}`, run: () => checkTodoPlaceholders(mdFiles) },
+  { title: `[1] 死链检测(体系面${isTemplate ? ' + 治理面' : ''},${docScopedFiles.length} 个文件)`, run: () => checkDeadLinks(docScopedFiles) },
+  { title: `[2] TODO(template) 分布(对象集同检查 1)${isStrict ? '(strict:活文档残留即失败)' : '(报告模式,加 --strict 启用严格检查)'}`, run: () => checkTodoPlaceholders(docScopedFiles) },
   { title: `[3] AGENTS.md 行数(上限 ${AGENTS_MAX_LINES})`, run: checkAgentsLineLimit },
   { title: '[4] specs/ 编号配对(spec 与 tasks 同前缀;同编号仅一组)', run: checkSpecNumberPairs },
-  { title: '[5] 发布面校验(--template:manifest.txt 白名单 + 根目录无清单外条目)', when: isTemplate, run: checkReleaseSurface },
+  { title: '[5] 发布面校验(--template:manifest.txt 白名单 + 根目录无清单外条目,忽略条目豁免)', when: isTemplate, run: checkReleaseSurface },
   { title: '[6] research 清单登记(docs/README.md research 文件清单表)', run: checkResearchRegistry },
   { title: '[7] 编号文件命名合式(五目录编号文件命名模式)', run: checkNumberedFileNaming },
   { title: '[8] 自建活文档登记(docs/README.md 自建活文档清单,双向)', run: checkSelfBuiltRegistry },
   { title: '[9] meta/rfcs 注册表登记(--template:每份模板 RFC 已登记且链接存在)', when: isTemplate, run: checkMetaRfcRegistry },
   { title: '[10] 体系文档忽略检测(docs/ 含证据目录 + 根级三件,禁被 git 忽略)', run: checkIgnoredDocs },
   { title: '[11] 文件名合式(kebab-case:docs/ 散文档 + 根级三件,编号文件归检查 7;--template 含 meta/)', run: () => checkFileNameKebab(mdFiles) },
+  { title: '[12] 注册表与文件头一致性(状态 / 更新日期 / 来源;编号回退 archive;--template 含 meta/rfcs 面)', run: checkRegistryHeaderConsistency },
 ];
 
 let failures = 0;

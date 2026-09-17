@@ -33,7 +33,7 @@ T 为实现任务,TF 为固定收尾任务(不可删除)。
   - 验收点:<完成标志>
 - [ ] **T2**:…
 - [ ] **TF1**:更新相关文档(tech-stack.md / architecture.md / 受影响的 spec;登记的自建活文档如有)
-- [ ] **TF2**:更新 `docs/README.md` 注册表(spec 状态转 Implemented)
+- [ ] **TF2**:spec 状态收口四动作(同一 commit,见 workflow.md 3.6):文件头状态行 / 变更记录迁移行 / 更新日期 / 注册表行同步
 - [ ] **TF3**:对照 SPEC-NNNN 的 FR/ER 逐条自检,在下方自检表记录结果
 
 ## Spec 自检表

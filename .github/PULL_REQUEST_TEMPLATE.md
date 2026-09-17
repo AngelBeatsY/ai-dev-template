@@ -50,7 +50,8 @@ commit 级参与由工具自动添加的 Co-Authored-By 尾注体现,此处声�
 - [ ] 关键链路已冒烟验证(端到端真实运行,结果记入交付记录)
 - [ ] lint 通过
 - [ ] 相关文档已同步(tech-stack.md / architecture.md / 受影响的 spec;登记的自建活文档如有)
-- [ ] `docs/README.md` 注册表已更新(新建或状态变更的 brief/spec/RFC/ADR)
+- [ ] `docs/README.md` 注册表与对应文件头已同步(状态与更新日期;新建或状态变更的 brief/spec/RFC/ADR)
+- [ ] `docs/STATUS.md` 已按 workflow.md 6.2 更新(合入前:当前状态 / 进行中 / 下一步)
 - [ ] tasks 清单已逐项勾选(如有)
 - [ ] 常规级以上:独立验收已通过,结论落档 tasks「独立验收」节(小改不适用)
 - [ ] 不包含密钥、凭证、敏感信息

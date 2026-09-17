@@ -13,6 +13,9 @@ HTML 注释为指导语,填写后删除。
 | 状态 | Proposed |
 | 日期 | YYYY-MM-DD |
 | 复核人 | <1 名;从 RFC 派生时可写「免复核(RFC-NNNN 已评审)」> |
+| 更新日期 | YYYY-MM-DD |
+
+<!-- 状态值 MUST 为裸枚举词(生命周期见 docs/README.md),不带日期与后缀;取代关系记 superseded-by 链接,不入状态值。「更新日期」行随状态行同为 append-only 豁免更新项(workflow.md 第 5 节)= 最后修订日,git log 实测取值;注册表「更新日期」列同语义,同一 commit 刷新。状态与更新日期双面受 verify-docs 检查 12 校验(RFC-0019/0020)。 -->
 
 ## 背景
 

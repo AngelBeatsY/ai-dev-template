@@ -103,11 +103,12 @@ AI 协作特别约束:连续两次修复尝试仍失败时 MUST 停下来,向用
 2. 关键链路已冒烟验证(端到端真实运行,结果记入交付记录)。
 3. lint 通过。
 4. 相关文档已同步:tech-stack.md(新增依赖/命令/惯例)、architecture.md(结构变化)、受影响的 spec,以及 docs/README.md「自建活文档清单」中受影响的条目(如有,见 [workflow.md](workflow.md) 6.3)。
-5. `docs/README.md` 注册表已更新(如有状态变化)。
+5. `docs/README.md` 注册表与对应文件头已同步(状态与更新日期,双面一致;verify-docs 检查 12)。
 6. tasks 清单逐项勾选,交付记录已回填(如有)。
 7. 不包含密钥、凭证、敏感信息。
 8. 不包含与本任务无关的改动。
 9. 兼容性影响已在 spec 或 PR 中说明。
+10. STATUS.md 已按 [workflow.md](workflow.md) 6.2 更新(合入前:当前状态 / 进行中 / 下一步)(RFC-0019)。
 
 ## 11. 与技术栈声明的衔接
 
