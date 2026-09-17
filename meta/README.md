@@ -54,5 +54,7 @@
 | RFC-0016 | 体系文档失踪门禁 —— docs/ 禁被 git 忽略与私有文档通道条款化(verify-docs 检查 10) | Accepted | 2026-09-10 | [0016-tracked-distribution.md](rfcs/0016-tracked-distribution.md) |
 | RFC-0017 | 文件名 kebab-case 合式检查(verify-docs 检查 11 —— 既存 MUST 的机器兜底) | Accepted | 2026-09-11 | [0017-filename-kebab-case.md](rfcs/0017-filename-kebab-case.md) |
 | RFC-0018 | 开工评审与独立验收 —— 断开 spec 层与实现层的自报链 | Accepted | 2026-09-15 | [0018-dual-quality-gates.md](rfcs/0018-dual-quality-gates.md) |
+| RFC-0019 | 账面状态一致性与收口核对 —— 双面同步、更新日期语义与隐性改规范禁令 | Draft | 2026-09-16 | [0019-ledger-consistency.md](rfcs/0019-ledger-consistency.md) |
+| RFC-0020 | 注册表与文件头一致性检查(verify-docs 检查 12 —— 状态值与更新日期的门禁兜底) | Draft | 2026-09-16 | [0020-registry-status-check.md](rfcs/0020-registry-status-check.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.mjs --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。
