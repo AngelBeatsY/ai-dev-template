@@ -10,28 +10,28 @@ AI 开发模板:一套可复制到新项目的文档结构、工作流规范与 
 
 ## 安装与初始化
 
-**给 AI**:三句话任选,**零额外参数** —— 场景判断、执行步骤、完成判据全部在 [install.md](install.md) 中,AI 读取后自行执行(唯一要替换的是 `<your-org>`):
+**给 AI**:三句话任选,**零额外参数** —— 场景判断、执行步骤、完成判据全部在 [install.md](install.md) 中,AI 读取后自行执行,复制即用:
 
 ```text
-按 https://github.com/<your-org>/ai-dev-template/install.md 安装
+按 https://github.com/AngelBeatsY/ai-dev-template/install.md 安装
 ```
 
 ```text
-按 https://github.com/<your-org>/ai-dev-template/install.md 初始化
+按 https://github.com/AngelBeatsY/ai-dev-template/install.md 初始化
 ```
 
 ```text
-按 https://github.com/<your-org>/ai-dev-template/install.md 安装并初始化
+按 https://github.com/AngelBeatsY/ai-dev-template/install.md 安装并初始化
 ```
 
 **给人**(手动获取,**均不要继承模板的 .git 历史**;冲突处理与初始化步骤见 [install.md](install.md)):
 
 ```bash
 # 新建项目:degit 一行(或 GitHub Template Repository / 下载 zip 后删除 .git 目录)
-npx degit <your-org>/ai-dev-template my-new-project && cd my-new-project && git init
+npx degit AngelBeatsY/ai-dev-template my-new-project && cd my-new-project && git init
 
 # 并入现有项目:在当前项目根目录执行(已有 README 不覆盖)
-npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
+npx degit AngelBeatsY/ai-dev-template /tmp/ai-dev-template && \
   cp -r /tmp/ai-dev-template/{AGENTS.md,.github,docs} ./ && rm -rf /tmp/ai-dev-template
 ```
 

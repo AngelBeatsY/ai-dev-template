@@ -22,15 +22,15 @@ DONE WHEN(按动词):
 - 当前目录为空、或用户刚创建的新仓库 → **场景一(新建项目)**:
 
 ```bash
-npx degit <your-org>/ai-dev-template my-new-project && cd my-new-project && git init
+npx degit AngelBeatsY/ai-dev-template my-new-project && cd my-new-project && git init
 ```
 
-(用户已建好目录时,在目标目录内执行 `npx degit <your-org>/ai-dev-template .`)
+(用户已建好目录时,在目标目录内执行 `npx degit AngelBeatsY/ai-dev-template .`)
 
 - 当前目录已有代码 → **场景二(并入现有项目)**:按 `manifest.txt` 白名单复制(不含 `meta/` 与 `manifest.txt` 本身):
 
 ```bash
-npx degit <your-org>/ai-dev-template /tmp/ai-dev-template && \
+npx degit AngelBeatsY/ai-dev-template /tmp/ai-dev-template && \
   cp -r /tmp/ai-dev-template/{AGENTS.md,.github,docs} ./ && \
   cp /tmp/ai-dev-template/{install.md,.gitattributes,.gitignore} ./ 2>/dev/null; \
   rm -rf /tmp/ai-dev-template
