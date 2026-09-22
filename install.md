@@ -50,9 +50,9 @@ npx degit AngelBeatsY/ai-dev-template /tmp/ai-dev-template && \
 2. 根据用户口述生成 `docs/tech/architecture.md` 初稿(系统概览 Mermaid 雏形 + 模块清单表 + 至少一条关键数据流)。
 3. 协助用户梳理 `docs/tech/concepts.md`:领域术语表与统一用词表初稿。
 4. 初始化 `docs/STATUS.md`:当前状态、下一步,工作日志写第一条初始化记录。
-5. 改写根 README 为项目说明,删除「模板使用」「安装」「初始化」「日常使用」「FAQ」「文档导读」等模板专属章节。
+5. 改写根 README 为项目说明:删除模板专属章节(核心理念、安装与初始化、日常使用、文档导读、FAQ、模板版本),「目录结构」改写为项目实际目录说明或删除。
 6. 在 `AGENTS.md` 第 1 节填入项目一句话说明与版本基线(把 `vX.Y.Z` 占位换成初始化时的模板版本号),其余章节不动。
 7. 运行 `node docs/verify-docs.mjs --strict`,必须通过(活文档占位清零);失败则逐一定位补填。
-8. **场景一的项目删除本文件(install.md)与 `meta/`、`manifest.txt`**(三者均为模板自举文件,使命完成即删;删除 `meta/` 与 `manifest.txt` 与删本文件是同一步)。场景二没有本文件与 meta/,跳过。建议提交:`chore: initialize from ai-dev-template`。
+8. 删除本文件(install.md);场景一同时删除 `meta/` 与 `manifest.txt`(同为模板自举文件)。场景二未复制过 `meta/` 与 `manifest.txt`,无此步。建议提交:`chore: initialize from ai-dev-template`。
 
 EXECUTE NOW:按动词完成上述步骤,达成 DONE WHEN。

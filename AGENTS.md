@@ -18,11 +18,24 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 
 按任务类型**按需**加载,禁止一次性加载全部规范;引用某项规范前 MUST 先读对应文件,不得凭记忆编造规范内容。
 
+用户指令按动作词识别(README「日常使用」的短语即此形态),识别后按下方任务类型表加载:
+
+| 动作 | 路由 |
+|---|---|
+| 立项 <需求> | 「新功能立项」行 |
+| 起草 RFC <主题> | workflow.md 第 4 节 |
+| 施工 SPEC-NNNN | 「施工 / 改代码」行 |
+| 验收 SPEC-NNNN | 「验收 / 评审 PR」行(独立验收角色,workflow.md 3.5) |
+| 评审 SPEC-NNNN | 「验收 / 评审 PR」行(人工评审角色,两遍法) |
+| 收口 SPEC-NNNN | workflow.md 3.6 节 |
+| 探索 <问题> | workflow.md 第 2 节探索(不产正式文档、不改代码,方案 2-3 个) |
+| 继续 | 先读 STATUS.md 工作日志最后一条定位进度,再按所在阶段路由 |
+
 | 任务类型 | 必读 | 选读 |
 |---|---|---|
-| 新功能立项(写 brief/spec/tasks) | `docs/conventions/workflow.md`(先判分级) | 对应 `*-template.md`、`docs/conventions/writing-style.md` 与 `structure.md`(书写正式文档时)、`docs/research/`(已有调研) |
+| 新功能立项(写 brief/spec/tasks,涉视觉时含设计稿) | `docs/conventions/workflow.md`(先判分级) | 对应 `*-template.md`、`docs/conventions/writing-style.md` 与 `structure.md`(书写正式文档时)、`docs/research/`(已有调研) |
 | 施工 / 改代码 | 对应 spec + tasks(如有)、`docs/conventions/workflow.md` 第 3.4-3.6 节(开工就绪与执行协议)、`docs/tech/tech-stack.md`、`docs/conventions/dev-standards.md` | `docs/tech/concepts.md`、`docs/conventions/structure.md` |
-| 验收 / 评审 PR | `docs/conventions/workflow.md` 第 3.5 节、对应 spec | `.github/PULL_REQUEST_TEMPLATE.md`(提交者自检与评审清单) |
+| 验收 / 评审 PR | `docs/conventions/workflow.md` 第 3.5 节、对应 spec 与 tasks | `.github/PULL_REQUEST_TEMPLATE.md`(提交者自检与评审清单) |
 | 写 / 改文档 | `docs/conventions/writing-style.md`、`docs/conventions/structure.md` | `docs/tech/concepts.md`(术语与用词) |
 | 分支 / 提交 / PR | `docs/conventions/git-workflow.md` | `.github/PULL_REQUEST_TEMPLATE.md` |
 | 查历史决策 | `docs/README.md` 注册表 | 对应 RFC / ADR |
@@ -35,19 +48,21 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 | 分级 | 触发(简) | 流程 |
 |---|---|---|
 | 小改 | ≤3 文件且同模块,不碰公共接口/依赖/CI,唯一正确答案 | 直接实现,commit 写清缘由 |
-| 常规 | 新功能,或 >3 文件/跨模块,或需对齐验收标准 | brief → spec → tasks → 实现 |
+| 常规 | 新功能,或 >3 文件/跨模块,或需对齐验收标准 | brief(自发可免)→ spec → tasks → 实现 |
 | 重大 | 破坏兼容,或动依赖/架构/安全模型/治理规范本身 | 先 RFC,Accepted 后走常规 |
 
 **分级声明协议**:超出小改标准的任务,开工前 MUST 向用户输出「本次改动判断为 X 级,依据是 …」,等待确认后才动手;拿不准升一级。
+
+**产出物确认协议**:立项产出 brief / spec / tasks 时逐份提请用户确认后再写下一份;与分级声明协议同构,AI 只有建议权,确认权在人。用户在指令中声明连续产出(如「立项 X,一口气出完」)时 MAY 连续产出后一并提请确认,spec 转 Active 前仍 MUST 取得确认(workflow.md 3.2 通过标准不豁免)。
 
 ## 4. 硬性规则
 
 违反任何一条即为错误:
 
 - **R1** 分级为常规/重大时,spec 与 tasks 就绪(即开工评审通过,workflow.md 第 3.4 节)前不写实现代码。
-- **R2** 新建 brief/spec/RFC/ADR MUST 从对应 `*-template.md` 复制,编号取目录内 max+1,并在同一 commit 更新 `docs/README.md` 注册表。
+- **R2** 新建 brief/spec/RFC/ADR 与设计稿 MUST 从对应 `*-template.md` 复制,编号取目录内 max+1,并在同一 commit 更新 `docs/README.md` 注册表(设计稿不入注册表,由来源 spec「接口设计」节链接)。
 - **R3** 不新增、升级、移除任何依赖,除非任务明确要求或用户已确认。
-- **R4** 不修改状态为 Accepted/Active/Implemented 的 spec/RFC 与 ADR 正文;需要变更时走修订流程或新提案。
+- **R4** 不修改已定稿文档的正文:brief 经 Accepted、RFC 经 Accepted、spec 经 Active、ADR 经 Accepted 即冻结;需要变更时走修订流程或新提案(brief 的需求演化由 spec 修订承载,不回改 brief)。
 - **R5** 完成定义(DoD):测试与 lint 通过 + 相关文档同步 + tasks 勾选,三者缺一不可(完整清单见 `docs/conventions/dev-standards.md` 第 10 节)。
 - **R6** 只改与当前任务相关的文件;发现范围外问题,报告而不顺手修。
 - **R7** 不提交密钥、凭证、大型二进制;不确定是否敏感时先问。
@@ -64,7 +79,7 @@ TODO(template):一句话项目说明(初始化时填写,其余章节不动)。
 - 分支名 `type/NNNN-slug`,如 `feat/0001-user-auth`。
 - 一个 PR 只做一件事;建议 diff < 400 行。
 - commit 前核对当前分支与暂存区(`git status` + `git diff --staged`),精确路径 `git add`,禁用 `git add -A` / `git add .`。
-- 常规级以上:开工评审与独立验收结论落档 tasks,验收人不参与实现,测试与 lint 以复跑为准。
+- 常规级及以上:开工评审与独立验收结论落档 tasks,验收人不参与实现,测试与 lint 以复跑为准。
 - 不吞异常,不空 catch;公共接口必须有测试;修 bug 先写失败测试。
 - Schema 变更只走迁移文件:已提交迁移不修改不复用版本名;无库项目不适用(见 dev-standards.md)。
 - 实现细节(linter、错误处理惯例、日志库)以 `docs/tech/tech-stack.md` 为准。

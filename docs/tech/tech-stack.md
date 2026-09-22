@@ -51,4 +51,4 @@
 ## 维护规则
 
 - 本文件与实现不同步时,以实现为准并在下一次 PR 中更新本文件。
-- 新增运行时依赖 MUST 先有 Accepted 的 RFC,并同步更新本文件与 `architecture.md`。
+- 新增或升级运行时依赖 MUST 先有 Accepted 的 RFC(dev-standards.md 第 7 节),并同步更新本文件与 `architecture.md`。

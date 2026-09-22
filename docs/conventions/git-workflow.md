@@ -39,6 +39,7 @@
 | `perf` | 性能优化 |
 
 - 格式:`type(scope): subject`。scope 可选,为模块名。
+- 破坏性变更:type 后加 `!`(如 `feat!:`),并在 body 加 `BREAKING CHANGE: <影响与迁移要点>` —— Conventional Commits 自带记法,与 PR 模板 breaking 变更类型对应。
 - subject 用一句祈使句说明「做了什么」,结尾不加句号。
 - 常规/重大级的 commit,MUST 在 subject 或 body 引用编号,如 `feat(auth): 实现登录端点 (SPEC-0001)`。
 - 一个 commit 对应一个 task 或一个完整小步;禁止「混合提交」(功能 + 格式化 + 无关修复混在一个 commit)。
@@ -58,20 +59,20 @@ push、合并与销毁性操作对外可见或不可逆,授权权在人:
 
 - **推送授权**:`git push` MUST 在每次执行前获得用户当次明确授权,先前授权不跨会话延续;团队可在 workflow.md 第 8 节把非主分支放宽为会话级授权。
 - **禁止 force push**(含 `--force`):已推送历史 MUST NOT 改写(见第 5 节);确需覆盖自己刚推错的功能分支,先获用户明确授权。
-- **合并授权**:合并 MUST 在人工评审通过后(workflow.md 第 3.5 节)经用户当次授权执行,或由用户自行执行 —— AI 不自行合并,包括自己实现的 PR。
+- **合并授权**:合并 MUST 在人工评审通过后(workflow.md 第 3.5 节,纯个人项目豁免人工评审时以独立验收通过为前置)经用户当次授权执行,或由用户自行执行 —— AI 不自行合并,包括自己实现的 PR。
 - **危险操作确认**:`git reset --hard`、`git clean -fd`、`git checkout/restore -- <path>`、`git branch -D` 等丢弃未提交内容或分支的操作,MUST 先列出将被丢弃的对象与内容,获用户确认后执行。
 
 ## 5. 合并策略
 
-- 小改与单任务 PR 用 **squash merge**:压缩为单个 commit,历史干净。
-- 多任务 PR(有交付记录回填)用 **merge commit**:保留每个任务的 commit —— 交付记录回填的 hash 以此为据,squash 会使回填失效。
+- 无交付记录回填的 PR(小改)用 **squash merge**:压缩为单个 commit,历史干净。
+- 有交付记录回填的 PR(常规级及以上,含仅单个实现任务的)用 **merge commit**:保留每个任务的 commit —— 交付记录回填的 hash 以此为据,squash 会使回填失效。
 - 已推送的提交 MUST NOT rebase / amend:commit hash 可能已回填进交付记录,重写历史使回填失效;发现问题以新的 `fix` commit 前进。
 - 合并后删除分支,切回主分支并同步本地(`git pull`),清理已合并的本地分支;合并由人在平台侧执行时,后续会话在下次开工核对(DoR)前先同步本地主分支、清理已合并的本地分支。
 - 主分支 MUST 始终保持:测试通过、lint 通过、可构建。
 
 ## 6. 版本与发布(可选)
 
-采用本节的项目按以下约定,不采用的团队删除本节:
+采用本节的项目按以下约定;不采用的团队删除本节(预设开关,删除属项目级配置而非规范修订,恢复从模板仓库取回):
 
 - 遵循 SemVer:MAJOR.MINOR.PATCH。
 - 破坏性变更(MAJOR)MUST 已有 Accepted 的 RFC。

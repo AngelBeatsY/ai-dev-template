@@ -56,5 +56,7 @@
 | RFC-0018 | 开工评审与独立验收 —— 断开 spec 层与实现层的自报链 | Accepted | 2026-09-17 | [0018-dual-quality-gates.md](rfcs/0018-dual-quality-gates.md) |
 | RFC-0019 | 账面状态一致性与收口核对 —— 双面同步、更新日期语义与隐性改规范禁令 | Accepted | 2026-09-17 | [0019-ledger-consistency.md](rfcs/0019-ledger-consistency.md) |
 | RFC-0020 | 注册表与文件头一致性检查(verify-docs 检查 12 —— 状态值与更新日期的门禁兜底) | Accepted | 2026-09-17 | [0020-registry-status-check.md](rfcs/0020-registry-status-check.md) |
+| RFC-0021 | 入门面提示词形态重设计 —— README 改「动作 + 参数」,AGENTS 收口动作映射与确认协议 | Accepted | 2026-09-22 | [0021-readme-agents-sync.md](rfcs/0021-readme-agents-sync.md) |
+| RFC-0022 | brief 可选性流程表述收口与规范文本勘误 | Accepted | 2026-09-22 | [0022-brief-optional-flow.md](rfcs/0022-brief-optional-flow.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.mjs --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

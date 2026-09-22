@@ -32,64 +32,31 @@ npx degit AngelBeatsY/ai-dev-template my-new-project && cd my-new-project && git
 
 # 并入现有项目:在当前项目根目录执行(已有 README 不覆盖)
 npx degit AngelBeatsY/ai-dev-template /tmp/ai-dev-template && \
-  cp -r /tmp/ai-dev-template/{AGENTS.md,.github,docs} ./ && rm -rf /tmp/ai-dev-template
+  cp -r /tmp/ai-dev-template/{AGENTS.md,.github,docs} ./ && \
+  cp /tmp/ai-dev-template/{install.md,.gitattributes,.gitignore} ./ 2>/dev/null; \
+  rm -rf /tmp/ai-dev-template
 ```
 
 初始化(填写 tech-stack / architecture / concepts / STATUS)的完整步骤与验收点同样在 [install.md](install.md);日常使用流程见下方「日常使用」。
 
 ## 日常使用:一个需求的完整流程
 
-流程主线:**立项(分级 → brief → spec → tasks)→ 施工(DoR 核对 → 逐任务)→ 验收(收口复查 → 冒烟 → 评审)→ 合并收口**。小改跳过立项直接修;重大级先 RFC。每一步把对应提示词发给 AI 即可:
+流程主线:**立项(分级 → brief(自发可免)→ spec → tasks;FR 依赖视觉细节时设计稿定稿先于 spec Active)→ 施工(DoR 核对与开工评审 → 逐任务)→ 验收(收口复查 → 冒烟 → 独立验收 → 评审)→ 合并收口**。小改跳过立项直接修;重大级先 RFC。每步把一句短语发给 AI 即可(见下表):
 
-**① 探索(可选,未想清楚时)**
+提示词即「动作 + 参数」,读什么文档、做什么判断由 AGENTS.md 路由承担(工具自动加载 AGENTS.md;不自动加载的工具在指令前加「阅读 AGENTS.md」):
 
-```text
-我想做 <需求一句话>,但不确定怎么做才干净。先读相关代码,给我 2-3 个方案与推荐;不写正式文档、不改代码。
-```
+| 你想做什么 | 发给 AI |
+|---|---|
+| 不确定怎么做,先摆方案 | `探索 <问题一句话>` |
+| 立项(产出 brief(自发可免)/ spec / tasks 与开工提示词) | `立项 <需求一句话>` |
+| 重大级先写提案(AI 判重大后会停下引导) | `起草 RFC <主题一句话>` |
+| 按任务清单实施 | `施工 SPEC-NNNN` |
+| 独立验收(未参与实现的会话执行) | `验收 SPEC-NNNN` |
+| 人工评审 PR | `评审 SPEC-NNNN` |
+| 合并后收口回填 | `收口 SPEC-NNNN` |
+| 中断后继续 | `继续` |
 
-**② 立项**(产出 brief / spec / tasks 并登记,最后输出开工提示词)
-
-```text
-阅读 AGENTS.md 与 docs/STATUS.md,按 workflow.md 立项:<需求一句话>。
-先向我声明分级判断与依据;确认后依次产出 brief、spec、tasks,每份给我确认后再写下一份。
-```
-
-重大级分支(AI 判级后会引导):
-
-```text
-按 workflow.md 第 4 节起草 RFC:<主题>。至少 2 个备选方案(含维持现状),附对比表与迁移回滚计划。
-```
-
-**③ 施工**(直接用②输出的开工提示词)
-
-```text
-阅读 AGENTS.md 与 docs/STATUS.md,按 tasks 实施 SPEC-NNNN。
-先完成 workflow.md 第 3.4 节的开工就绪核对(含现状盘点漂移检查),再开始第一个任务。
-```
-
-**④ 验收 → PR → 合并收口**
-
-```text
-SPEC-NNNN 的 tasks 已全部勾选。按 workflow.md 第 3.5 节收口:
-收口复查(重读全部改动与依赖链)→ 冒烟验证 → 按 PR 模板「提交者自检」逐项报告结果。
-```
-
-```text
-对照 SPEC-NNNN 评审此 PR:第一遍只看正确性(逐条 FR/ER),第二遍只看可维护性;按严重度报告问题。
-```
-
-```text
-SPEC-NNNN 已合并。按 workflow.md 第 3.6 节收口:
-注册表状态转 Implemented、STATUS 更新当前状态与工作日志、核对交付记录完整。
-```
-
-**中断恢复(任意时刻)**
-
-```text
-阅读 AGENTS.md 与 docs/STATUS.md,从工作日志最后一条的「下次接」继续。
-```
-
-**小改**:直接说「修 <问题描述>」,AI 自行判级小改、直接实现,commit 写清缘由,走 PR(分级声明选小改)。
+**小改**:直接说「修 <问题描述>」,AI 自行判级、直接实现,commit 写清缘由,走 PR(分级声明选小改)。
 
 ## 目录结构
 
@@ -97,9 +64,9 @@ SPEC-NNNN 已合并。按 workflow.md 第 3.6 节收口:
 ai-dev-template/
 ├── AGENTS.md                    # AI 协作规范唯一入口(≤150 行)
 ├── README.md                    # 本文件(初始化后改写为项目说明)
-├── install.md                   # 给 AI 的安装与初始化指令(场景一项目初始化后删除)
+├── install.md                   # 给 AI 的安装与初始化指令(初始化完成后删除)
 ├── .github/PULL_REQUEST_TEMPLATE.md
-└── docs/
+├── docs/
     ├── README.md                # 文档中心 + 状态注册表(唯一)
     ├── STATUS.md                # 项目状态 + 工作日志(跨会话交接锚点)
     ├── decisions.md             # 模板设计决策与理由(模板自带,保留)
@@ -109,7 +76,7 @@ ai-dev-template/
     ├── rfcs/                    # 重大变更提案 RFC
     ├── adr/                     # 架构决策记录 ADR
     ├── research/                # 调研记录(只读,不回改)
-    ├── design/                  # UI/视觉设计稿(设计先行时用)
+    ├── design/                  # UI/视觉设计稿(FR 依赖视觉细节时用,定稿先于 spec Active)
     ├── tech/                    # tech-stack / architecture / concepts(活文档)
     └── conventions/             # 规范文档(复制后不动)
         ├── workflow.md          # 治理工作流(核心)
@@ -117,6 +84,8 @@ ai-dev-template/
         ├── dev-standards.md     # 开发规范(语言无关)
         ├── structure.md         # 目录与命名规范
         └── writing-style.md     # 文档书写规范
+├── meta/                        # 模板治理档案(rfcs 与 backlog;不随模板分发,场景一初始化时删除)
+└── manifest.txt                 # 场景二复制白名单(不随模板分发,场景一初始化时删除)
 ```
 
 ## 文档导读
@@ -140,15 +109,18 @@ ai-dev-template/
 AGENTS.md 是跨工具通用标准,主流 AI 编码工具都已支持。多份工具私有配置会带来维护与漂移成本。若个别工具版本不支持,用该工具的原生引用机制(如 CLAUDE.md 中写一行 `@AGENTS.md`)指向根文件即可,模板不内置。
 
 **规范改起来太重了,能简化吗?**
-可以。工作流中只有「分级标准 + 硬性规则」是骨架;RFC 评审窗口、评审人数等参数集中在 workflow.md 第 8 节,团队按需调小。但分级判断与 spec 先行(常规级以上)建议保留 —— 这是 AI 协作质量的主要来源。
+可以。工作流中只有「分级标准 + 硬性规则」是骨架;RFC 评审窗口、评审人数等参数集中在 workflow.md 第 8 节,团队按需调小。但分级判断与 spec 先行(常规级及以上)建议保留 —— 这是 AI 协作质量的主要来源。
 
 **纯个人项目也要这么全吗?**
-个人项目建议至少保留:AGENTS.md、tech-stack.md、spec-template.md、STATUS.md。RFC/ADR 在没有协作者时可省略评审环节,仅作决策记录。常规级以上任务的独立验收不随评审豁免而省略 —— 它是被豁免的人工评审的补偿性检查(workflow.md 第 3.5 节)。research/ 在选型多的项目价值最大。
+个人项目建议至少保留:AGENTS.md、tech-stack.md、spec-template.md、STATUS.md。RFC/ADR 在没有协作者时可省略评审环节,仅作决策记录。常规级及以上任务的独立验收不随评审豁免而省略 —— 它是被豁免的人工评审的补偿性检查(workflow.md 第 3.5 节)。research/ 在选型多的项目价值最大。
 
 **模板本身如何升级?**
 模板仓库的变更走自身治理流程(修改 conventions 规范 = 重大级)。已初始化的项目按需 cherry-pick,不强制同步;比对基准是 `AGENTS.md` 第 1 节的「基于 ai-dev-template vX.Y.Z 初始化」版本号与模板仓库最新版本。
 
 ## 模板版本
+
+- v2.9.0(2026-09-22):brief 可选性流程表述收口与规范文本勘误 —— workflow 与 AGENTS 速查、统一用词表七处收口为「brief(自发可免)」口径,DoR 与立项交付补自发立项核对方式(注册表「来源」列记「无」为凭),元规则 3 斜杠消歧;勘误:用词表「收口」定义与用法对齐、DoR 测试基线对照补续作限定、6.2 合入时点对齐 RFC-0019「合入前」、3.3 固定收尾枚举对齐 TF2 四动作、「常规级以上」六处统一为「及以上」(含落地时补遗的 decisions.md 一处)、tech-stack 维护规则补「升级」、decisions.md「UI 设计三路径」第三路径加注(P0 = 首个 Phase 的实践称呼)、writing-style 行内代码空格;PR 模板「spec 已就绪」改「已 Active 且开工评审通过」;新增语义:AGENTS R4 重写(brief 经 Accepted 即冻结,需求演化由 spec 修订承载)与分级声明协议补「超出小改」限定;行为性修正:squash 分界改挂交付记录(无回填 PR(小改)squash、有回填 PR(含仅单个实现任务)merge commit,decisions.md 承载面同步),breaking commit 记法显式化(`!` + `BREAKING CHANGE` footer),预设节删除治理定性(属项目级配置)。提案档案 RFC-0022 存于模板仓库 meta/rfcs/(不随模板分发)。
+- v2.8.0(2026-09-22):入门面提示词形态重设计 —— README「日常使用」六个长提示词块整体替换为动作 + 参数表(八动词:探索 / 立项 / 起草 RFC / 施工 / 验收 / 评审 / 收口 / 继续),规范细节退出提示词;AGENTS.md 补用户指令动作映射(第 2 节)、产出物确认协议(第 3 节,与分级声明协议同构,spec 转 Active 前确认不豁免)、路由行补 design(立项行)与 tasks(验收行)、R2 扩设计稿(不入注册表,来源 spec「接口设计」节链接);流程主线行同步(design 定稿先于 spec Active、独立验收入验收链);勘误:workflow 3.6「合同时」错别字、structure 决策树「设计先行」残留、install.md 删除语义收口(两场景初始化后均删)、3.5 与 git-workflow 第 4 节纯个人豁免括注、verify-docs 检查集括注收口(指向脚本头部权威)、README 给人场景二命令与 install.md 对齐、install.md 第 5 步章节名对齐、README 目录树补 meta/ 与 manifest.txt 行、structure 第 4 节悬空冒号。提案档案 RFC-0021 存于模板仓库 meta/rfcs/(不随模板分发)。
 
 - v2.7.2(2026-09-17):STATUS 工作日志行形态勘误 —— STATUS.md 三要素定义补行形态:条目 = `- YYYY-MM-DD(续):<三要素>`(同日多条加「(续)」),三要素有则必写(无接续事项时「下次接」写显式收口语,不省略要素),关联列装 hash / 编号不装解释;会话交接面无机器核对,形态以可扫读为度。判据:同格被多种写法填过且消费方跨会话(下游 126 条实测形态基本收敛,仅「下次接」省略式收口不统一)。与 v2.7.1 同族 patch,不立 RFC。
 - v2.7.1(2026-09-17):变更记录行形态勘误 —— spec-template「变更记录」与 rfc-template「变更历史」注释补行形态三条:日期 = 所记变化的实际发生日(追补不改写日期,追补背景进原因列);修改列 = 事实本体一格一件事(状态迁移写裸词对「A → B」,内容变更写事实短语);原因列 = 动机与痕迹(定义与解释性文字不入本表)。形态约定为 SHOULD(注释级),不入检查 12 核对对象(呈现面 = 核对面)。首份下游实测填写即出现「修改列叙事 + 原因列定义」漂移,同族于「字段有载体、无语义」根因,按 v1.9.1 / v2.1.1 勘误先例以 patch 落地、不立 RFC。

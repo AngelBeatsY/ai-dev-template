@@ -8,7 +8,7 @@
 |---|---|
 | `AGENTS.md` | AI 协作规范的唯一入口(见根目录该文件) |
 | `README.md` | 项目说明 |
-| `install.md` | **模板自带**:给 AI 的安装与初始化指令(一句话提示词指向本文件;场景一项目初始化完成后删除) |
+| `install.md` | **模板自带**:给 AI 的安装与初始化指令(一句话提示词指向本文件;初始化完成后删除) |
 | `.github/` | GitHub 配置(PR 模板等) |
 | `docs/` | 全部文档与文档工具,见下节 |
 | 代码目录 | **本模板不预设**(如 `src/`、`app/`、`lib/`),由各项目在 [tech-stack.md](../tech/tech-stack.md) 中声明并维护 |
@@ -21,7 +21,7 @@
 |---|---|---|
 | `docs/STATUS.md` | 项目状态活文档:当前状态、进行中、下一步、工作日志(见 [workflow.md](workflow.md) 6.2 节) | 历史流水(进工作日志,只追加) |
 | `docs/decisions.md` | **模板自带**:ai-dev-template 的设计决策记录(随模板分发,初始化后保留;见 [decisions.md](../decisions.md)) | 目标项目自己的决策(走 ADR) |
-| `docs/verify-docs.mjs` | **模板自带**:文档自检工具(死链:存在、仓库内、未被 git 忽略 / TODO 分布 / AGENTS.md 行数 / 编号配对),`node docs/verify-docs.mjs [--strict]`(ESM,Node ≥ 20.11) | — |
+| `docs/verify-docs.mjs` | **模板自带**:文档自检工具(检查项清单以脚本头部注释为唯一权威),`node docs/verify-docs.mjs [--strict]`(ESM,Node ≥ 20.11) | — |
 | `docs/briefs/` | 需求 brief(按 [brief-template.md](../briefs/brief-template.md) 实例化) | 技术方案 |
 | `docs/specs/` | 功能规格 spec 与任务拆解 tasks | 需求动机、架构决策 |
 | `docs/rfcs/` | 重大变更提案 RFC | 轻量决策(走 ADR) |
@@ -48,7 +48,7 @@
 ## 4. 命名总则
 
 - 文件名一律使用 kebab-case 英文:`user-auth-flow.md`,不使用下划线、空格、中文。
-- 流水产物命名:`NNNN-<slug>.<type>.md`,编号 4 位零填充,各流独立递增:
+- 流水产物命名:`NNNN-<slug>.<type>.md`,编号 4 位零填充,各流独立递增。
 - 类型后缀仅在同目录存在多种流水类型时使用(specs/ 的 spec 与 tasks);单类型目录(rfcs/、adr/、design/)目录名即类型,不加后缀;briefs/ 固定 `.brief`:brief 常与其 spec 同 slug 而编号独立,后缀跨目录标记类型,避免同名歧义。
 
 ```
@@ -77,7 +77,7 @@ docs/adr/0001-use-postgresql.md
 ├─ 持久的技术事实(本项目用什么、怎么组织、术语叫什么) → docs/tech/(更新现有活文档优先于新建)
 ├─ 团队做事方式的规范 → docs/conventions/(修改既有规范优先于新建;走治理流程)
 ├─ 运维操作手册(部署 SOP、服务器信息等操作步骤) → 自建 docs/deploy/(模板不建初始目录)
-├─ UI / 视觉设计稿(设计先行的项目:页面规范、设计系统) → 自建 docs/design/(模板不建初始目录)
+├─ UI / 视觉设计稿(FR 依赖视觉细节时用,定稿先于 spec Active;页面规范、设计系统类持久参考同目录,属活文档) → 自建 docs/design/(模板不建初始目录)
 ├─ 产品规划(roadmap、版本计划) → 自建 docs/plan/(模板不建初始目录)
 ├─ 本地私有内容(个人笔记、会话草稿,不入库不分发) → docs/ 下点前缀目录(如 `docs/.drafts/`),见 5.3 节
 └─ 都不是 → 大概率不该创建这份文档

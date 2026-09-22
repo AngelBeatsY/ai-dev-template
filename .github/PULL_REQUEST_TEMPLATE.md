@@ -21,7 +21,7 @@ PR 模板:review 阶段的载体。分级标准与流程详见 docs/conventions/
 <!-- 依据 docs/conventions/workflow.md 的分级标准判定。与开工时声明的分级必须一致。 -->
 
 - [ ] 小改(Direct)
-- [ ] 常规(Standard,spec 已就绪)
+- [ ] 常规(Standard,spec 已 Active 且开工评审通过)
 - [ ] 重大(Major,RFC 已 Accepted)
 
 ## 变更类型
@@ -53,11 +53,11 @@ commit 级参与由工具自动添加的 Co-Authored-By 尾注体现,此处声�
 - [ ] `docs/README.md` 注册表与对应文件头已同步(状态与更新日期;新建或状态变更的 brief/spec/RFC/ADR)
 - [ ] `docs/STATUS.md` 已按 workflow.md 6.2 更新(合入前:当前状态 / 进行中 / 下一步)
 - [ ] tasks 清单已逐项勾选(如有)
-- [ ] 常规级以上:独立验收已通过,结论落档 tasks「独立验收」节(小改不适用)
+- [ ] 常规级及以上:独立验收已通过,结论落档 tasks「独立验收」节(小改不适用)
 - [ ] 不包含密钥、凭证、敏感信息
 - [ ] 不包含与本任务无关的改动
 - [ ] 兼容性影响已在 spec 或下方说明
-- [ ] 涉及文档改动时 `node docs/verify-docs.mjs` 通过(死链 / TODO 残留 / 编号配对)
+- [ ] 涉及文档改动时 `node docs/verify-docs.mjs` 通过
 
 ## 评审者清单
 
