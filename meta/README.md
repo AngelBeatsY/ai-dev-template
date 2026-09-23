@@ -58,5 +58,6 @@
 | RFC-0020 | 注册表与文件头一致性检查(verify-docs 检查 12 —— 状态值与更新日期的门禁兜底) | Accepted | 2026-09-17 | [0020-registry-status-check.md](rfcs/0020-registry-status-check.md) |
 | RFC-0021 | 入门面提示词形态重设计 —— README 改「动作 + 参数」,AGENTS 收口动作映射与确认协议 | Accepted | 2026-09-22 | [0021-readme-agents-sync.md](rfcs/0021-readme-agents-sync.md) |
 | RFC-0022 | brief 可选性流程表述收口与规范文本勘误 | Accepted | 2026-09-22 | [0022-brief-optional-flow.md](rfcs/0022-brief-optional-flow.md) |
+| RFC-0023 | 设计系统活文档骨架模板(design-system-template.md)与生命周期规则兑现 | Accepted | 2026-09-23 | [0023-design-system-template.md](rfcs/0023-design-system-template.md) |
 
 模板维护者:新增治理文件 MUST 放本目录;`node docs/verify-docs.mjs --template` 会校验根目录无 manifest 白名单与 meta/ 之外的顶层条目。

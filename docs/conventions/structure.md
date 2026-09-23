@@ -101,7 +101,7 @@ docs/design/
 - **原型与生产分离**:design/ 只放原型与参考;会被产品采用的样式 / token 由实现任务落地到代码目录,不在 design/ 维护双份。
 - 资产文件不带版本号,设计迭代在说明文档记变更,文件替换交由 git 历史。
 - 设计稿不进 docs/README.md 注册表,由来源 spec「接口设计」节链接检索。
-- 非挂靠 spec 的持久参考(页面规范、设计系统)不从 design-template 实例化、不编号,属活文档类(第 3 节判据),每项目一份持续更新,在 `docs/README.md` 自建活文档清单登记(义务见 [workflow.md](workflow.md) 第 6.3 节);完整生命周期规则待真实使用后按需增补。
+- 非挂靠 spec 的持久参考(页面规范、设计系统)不从 design-template 实例化、不编号,属活文档类(第 3 节判据),每项目一份持续更新,在 `docs/README.md` 自建活文档清单登记(义务见 [workflow.md](workflow.md) 第 6.3 节)。设计系统从 [design-system-template.md](../design/design-system-template.md) 实例化为 `docs/design/design-system.md`(文件名固定、不带编号,版本在文件头与「变更记录」维护):章节按项目形态增删,模板零默认视觉值;生命周期 = 活文档(无状态机),视觉值或机制变更 MUST 记「变更记录」并递增版本号;多文件设计资产放同 slug 子目录 `docs/design/design-system/`(与 research 证据目录同构),逐项登记于文档「资产清单」节。
 
 ### 5.2 research/ 多文件调研组织
 
